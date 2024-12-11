@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 public class Character : MonoBehaviour
 {
@@ -15,11 +16,7 @@ public class Character : MonoBehaviour
     public int BirthAmount;//繁殖后代数量
     public float BirthCold;//繁殖冷却时间
     public float BirthColdTimer;//繁殖冷却计时器
-    public float MultiplyCost;//繁殖消耗能量
-    public float EatAmount;//单次获取能量
-    public float EatCold;//获取能量冷却时间
-    public float EatColdTimer;//获取能量冷却计时器
-    public string AnimalTag;//物种标签
+    public float MultiplyCost;//繁殖消耗能量   
     public GameObject[] SameAnimal;//所有同类生物
     public GameObject MultiplyTarget;//交配对象
     public int BabyAmount;//附近幼崽数量
@@ -28,8 +25,10 @@ public class Character : MonoBehaviour
     public GameObject Father;//父对象
     public GameObject Mother;//母对象
     public float mindistance;
+    public int Stage;//状态(0巡逻，1觅食，2繁殖)
     void Start()
     {
+        SameAnimal = GameObject.FindGameObjectsWithTag(tag);//寻找所有同类
         FindParents();
         if (Father != null && Mother != null)
         {
@@ -39,17 +38,15 @@ public class Character : MonoBehaviour
         BabyAmount = 0;
         CurrentEnergy = MaxEnergy*0.5f;
         BirthColdTimer = BirthCold;
-        EatColdTimer = EatCold;       
     }
 
     // Update is called once per frame
     void Update()
     {
-        Age += Time.deltaTime*0.01f;//年龄增长
-        BirthColdTimer -= Time.deltaTime;
-        EatColdTimer -= Time.deltaTime;
-        CurrentEnergy-=EnergyCost;//能量消耗
-        SameAnimal = GameObject.FindGameObjectsWithTag(AnimalTag);//寻找所有同类
+        Age += Time.deltaTime*0.1f;//年龄增长
+        BirthColdTimer -= Time.deltaTime;   
+        CurrentEnergy-=EnergyCost*Time.deltaTime;//能量消耗
+        SameAnimal = GameObject.FindGameObjectsWithTag(tag);//寻找所有同类
         if (CurrentEnergy > MultiplyCost && Age >= MultiplyAge && BirthColdTimer <= 0)//符合繁殖条件
         {
             isCanMultiply = true;
@@ -60,26 +57,33 @@ public class Character : MonoBehaviour
         }
         FindClosestTarget();
         if (isCanMultiply && MultiplyTarget != null)//开始繁殖
-        {          
-            Multiply();
+        {
+            Stage = 2;
+            if (TargetDistance > 1)//靠近
+            {
+                transform.position += Speed * TargetAngle*Time.deltaTime;
+            }
+            else
+            {
+                Multiply();
+            }
+        }
+        if(CurrentEnergy<=0)//死亡
+        {            
+            Destroy(gameObject);
         }
     }
     public void Multiply()//繁殖
-    {
-        if (TargetDistance > 3)//靠近
-        {
-            transform.position += Speed * TargetAngle;
-        }
-        else 
-        {
+    {               
             FindBaby();
             while(BabyAmount<BirthAmount)
             {
-                Instantiate(MultiplyTarget);
-                BirthAmount++;
+                Instantiate(MultiplyTarget);               
+                BabyAmount++;
             }
             CurrentEnergy -= MultiplyCost;
-        }
+            BirthColdTimer=BirthCold;
+        
     }
     public void FindClosestTarget()//寻找最近同类
     {
@@ -89,10 +93,10 @@ public class Character : MonoBehaviour
         foreach (GameObject target in SameAnimal)
         {
             float distance=Vector3.Distance(transform.position,target.transform.position);
-            if (distance < TargetDistance&&target.GetComponent<Character>().isCanMultiply)
+            if (distance < TargetDistance&&target.GetComponent<Character>().isCanMultiply&&target!=this.gameObject)
             {
                 TargetDistance=distance;
-                TargetAngle =new Vector3(target.transform.position.x-target.transform.position.x, target.transform.position.y - target.transform.position.y,0).normalized;
+                TargetAngle =new Vector3(target.transform.position.x-transform.position.x, target.transform.position.y - transform.position.y,0).normalized;
                 MultiplyTarget=target;
             }
         }        
@@ -111,11 +115,11 @@ public class Character : MonoBehaviour
     }
     public void FindParents()//寻找父母
     {
-       foreach(GameObject father in SameAnimal)
-        {
-            mindistance=float.MaxValue;           
+        mindistance = float.MaxValue;
+        foreach (GameObject father in SameAnimal)
+        {                    
             float distance=Vector3.Distance(transform.position,father.transform.position);           
-                if (distance < mindistance)
+                if (distance < mindistance && father != this.gameObject)
                 {
                     Father = father;
                     mindistance = distance;
@@ -125,7 +129,8 @@ public class Character : MonoBehaviour
         {
             float secondmindistance = float.MaxValue;
             float distance = Vector3.Distance(transform.position, mother.transform.position);
-            if (distance > mindistance &&distance< secondmindistance) {
+            if (distance > mindistance &&distance< secondmindistance&&mother != this.gameObject)
+            { 
                 Mother = mother;
                 secondmindistance = distance;
             }
@@ -133,9 +138,9 @@ public class Character : MonoBehaviour
     }
     public void Variation()//继承变异
     {
-        MaxEnergy = (Father.GetComponent<Character>().MaxEnergy + Mother.GetComponent<Character>().MaxEnergy)*0.8f + Random.Range(-100.0f, 100.0f);
-        Speed = (Father.GetComponent<Character>().Speed + Mother.GetComponent<Character>().Speed) * 0.8f + Random.Range(-100.0f, 100.0f);
-        BirthAmount = (int)((Father.GetComponent<Character>().BirthAmount + Mother.GetComponent<Character>().BirthAmount) * 0.8f + Random.Range(-10.0f, 10.0f));
-        BirthCold = (Father.GetComponent<Character>().BirthCold + Mother.GetComponent<Character>().BirthCold) * 0.8f + Random.Range(-100.0f, 100.0f);
+        MaxEnergy = (Father.GetComponent<Character>().MaxEnergy + Mother.GetComponent<Character>().MaxEnergy)*0.4f + Random.Range(0, 30.0f)*0.2f;
+        Speed = (Father.GetComponent<Character>().Speed + Mother.GetComponent<Character>().Speed) * 0.4f + Random.Range(0, 1.0f) * 0.2f;
+        BirthAmount = (int)((Father.GetComponent<Character>().BirthAmount + Mother.GetComponent<Character>().BirthAmount) * 0.4f + Random.Range(0, 2.0f) * 0.2f);
+        BirthCold = (Father.GetComponent<Character>().BirthCold + Mother.GetComponent<Character>().BirthCold) * 0.4f + Random.Range(0, 10.0f) * 0.2f;
     }
 }
