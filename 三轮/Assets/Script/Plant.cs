@@ -23,6 +23,7 @@ public class Plant : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        AllPlant = GameObject.FindGameObjectsWithTag(tag);
         if (CurrentEnergy < MaxAmount)//获得能量
         {
             CurrentEnergy += Time.deltaTime * 0.1f;
@@ -30,8 +31,7 @@ public class Plant : MonoBehaviour
         if (CurrentEnergy <= 0)//死亡
         {
             Destroy(gameObject);
-        }
-        AllPlant=GameObject.FindGameObjectsWithTag(tag);
+        }       
         GrowColdTimer-=Time.deltaTime;    
         FindPlant();
         if(GrowColdTimer < 0 &&PlantAmount<=MaxAmount&&AllPlantAmount<=100)//蔓延
@@ -46,13 +46,16 @@ public class Plant : MonoBehaviour
     {
         PlantAmount = 0;
         AllPlantAmount = 0;
-        foreach(GameObject plant in AllPlant)
+        if (AllPlant != null)
         {
-            float distance=Vector3.Distance(transform.position, plant.transform.position);
-            AllPlantAmount++;
-            if (distance <= CirleDistance)
+            foreach (GameObject plant in AllPlant)
             {
-                PlantAmount++;
+                float distance = Vector3.Distance(transform.position, plant.transform.position);
+                AllPlantAmount++;
+                if (distance <= CirleDistance)
+                {
+                    PlantAmount++;
+                }
             }
         }
     }

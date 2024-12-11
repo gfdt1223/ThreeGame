@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.SceneManagement;
 using UnityEngine;
 
 public class EatPlant : MonoBehaviour
@@ -21,13 +22,20 @@ public class EatPlant : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Plant = GameObject.FindGameObjectsWithTag("grass");
-        EatColdTimer -= Time.deltaTime;
-        FindPlant();
-        if(character.MaxEnergy-character.CurrentEnergy>EatAmount)
+        if (character.Stage != -1)
         {
-            character.Stage = 1;
-            Eat();
+            Plant = GameObject.FindGameObjectsWithTag("grass");
+            EatColdTimer -= Time.deltaTime;
+            FindPlant();
+            if (character.MaxEnergy - character.CurrentEnergy > EatAmount && EatTarget != null&&character.Stage!=3)
+            {
+                character.Stage = 1;
+                Eat();
+            }
+            else if (character.Stage != 2)
+            {
+                character.Stage = 0;
+            }
         }
     }
     public void FindPlant()
@@ -35,11 +43,14 @@ public class EatPlant : MonoBehaviour
          mindistance=float.MaxValue;
         foreach (GameObject plant in Plant)
         {
-            float distance = Vector3.Distance(transform.position, plant.transform.position);
-            if (distance< mindistance)
+            if (plant != null)
             {
-                mindistance = distance;
-                EatTarget=plant;
+                float distance = Vector3.Distance(transform.position, plant.transform.position);
+                if (distance < mindistance)
+                {
+                    mindistance = distance;
+                    EatTarget = plant;
+                }
             }
         }
     }
@@ -53,6 +64,10 @@ public class EatPlant : MonoBehaviour
         {
             EatTarget.GetComponent<Plant>().CurrentEnergy-=EatAmount;
             character.CurrentEnergy += EatAmount;
+            if (EatTarget.GetComponent<Plant>().CurrentEnergy <= 0)
+            {
+                Destroy(EatTarget);
+            }
             EatColdTimer = EatCold;
         }
        

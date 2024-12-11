@@ -5,7 +5,10 @@ TagManager:
   serializedVersion: 2
   tags:
   - grass
+  - sheep
   - ship
+  - wolf
+  - body
   layers:
   - Default
   - TransparentFX

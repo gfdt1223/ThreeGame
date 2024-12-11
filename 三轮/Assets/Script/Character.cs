@@ -10,6 +10,7 @@ public class Character : MonoBehaviour
     public float CurrentEnergy;//现有能量
     public float EnergyCost;//能量消耗
     public float Age;//年龄
+    public float OldAge;//衰老年龄
     public float MultiplyAge;//可以繁殖年龄
     public float Speed;//速度
     public bool isCanMultiply;//是否可以繁殖
@@ -25,10 +26,26 @@ public class Character : MonoBehaviour
     public GameObject Father;//父对象
     public GameObject Mother;//母对象
     public float mindistance;
-    public int Stage;//状态(0巡逻，1觅食，2繁殖)
+    public int Stage;//状态(-1死亡，0巡逻，1觅食，2繁殖,3奔跑)
+    public bool isdecide;//是否决定巡逻方向
+    float walktimer;
+    float x;
+    float y;
+    float ScaleX;
+    float ScaleY;
+    public GameObject RunTarget;//奔跑对象
+    public GameObject[] DangerousAnimal;//威胁对象
+    public Vector3 RunTargetAngle;//奔跑对象方向
+    public float LookDistance;//侦察距离
+    public bool isFood;//是否为猎物
     void Start()
     {
         SameAnimal = GameObject.FindGameObjectsWithTag(tag);//寻找所有同类
+        if (isFood)
+        {
+            DangerousAnimal = GameObject.FindGameObjectsWithTag("wolf");//寻找威胁对象
+        }
+   
         FindParents();
         if (Father != null && Mother != null)
         {
@@ -38,39 +55,91 @@ public class Character : MonoBehaviour
         BabyAmount = 0;
         CurrentEnergy = MaxEnergy*0.5f;
         BirthColdTimer = BirthCold;
+        Stage = 0;
     }
 
     // Update is called once per frame
     void Update()
     {
-        Age += Time.deltaTime*0.1f;//年龄增长
-        BirthColdTimer -= Time.deltaTime;   
-        CurrentEnergy-=EnergyCost*Time.deltaTime;//能量消耗
-        SameAnimal = GameObject.FindGameObjectsWithTag(tag);//寻找所有同类
-        if (CurrentEnergy > MultiplyCost && Age >= MultiplyAge && BirthColdTimer <= 0)//符合繁殖条件
+        if (isFood)
         {
-            isCanMultiply = true;
+            DangerousAnimal = GameObject.FindGameObjectsWithTag("wolf");//寻找威胁对象
         }
-        else
+        ScaleX =transform.localScale.x;
+        ScaleY=transform.localScale.y;
+        if (Stage != -1)
         {
-            isCanMultiply = false;
-        }
-        FindClosestTarget();
-        if (isCanMultiply && MultiplyTarget != null)//开始繁殖
-        {
-            Stage = 2;
-            if (TargetDistance > 1)//靠近
+            Age += Time.deltaTime * 0.1f;//年龄增长
+            BirthColdTimer -= Time.deltaTime;
+            CurrentEnergy -= EnergyCost * Time.deltaTime * 0.5f;//能量消耗
+            if (DangerousAnimal != null)
             {
-                transform.position += Speed * TargetAngle*Time.deltaTime;
+                FindClosestDanger();
+            }
+            if (RunTarget!=null||(!isFood&&Stage==3))//逃跑或追击
+            {
+                Stage = 3;
+                CurrentEnergy -= EnergyCost * Time.deltaTime;//能量加速消耗       
+                if (isFood)
+                {
+                    transform.position -= Speed * RunTargetAngle * Time.deltaTime;
+                }
+                else
+                {
+                    transform.position += Speed * RunTargetAngle * Time.deltaTime;
+                }
+            }
+            SameAnimal = GameObject.FindGameObjectsWithTag(tag);//寻找所有同类
+           
+            if (CurrentEnergy > MultiplyCost && Age >= MultiplyAge && BirthColdTimer <= 0)//符合繁殖条件
+            {
+                isCanMultiply = true;
             }
             else
             {
-                Multiply();
+                isCanMultiply = false;
+            }
+            FindClosestTarget();
+            if (isCanMultiply && MultiplyTarget != null&&Stage!=3)//开始繁殖
+            {
+                Stage = 2;
+                if (TargetDistance > 1)//靠近
+                {
+                    transform.position += Speed * TargetAngle * Time.deltaTime;
+                }
+                else
+                {
+                    Multiply();
+                }
+            }
+            if (CurrentEnergy <= 0)//死亡
+            {
+                Destroy(gameObject);
+            }
+            if (Age >= OldAge)//衰老
+            {
+                MaxEnergy -= Time.deltaTime * 0.5f;
+            }
+            if (Stage == 0)
+            {
+                StartCoroutine("Walk");
+            }
+            else
+            {
+                StopCoroutine("Walk");
+            }
+            if (!IfAdd(transform.position.x) && ScaleX > 0)//向左走动画
+            {
+                transform.localScale = new Vector3(-ScaleX, ScaleY, 0);
+            }
+            if (IfAdd(transform.position.x) && ScaleX < 0)//向右走动画
+            {
+                transform.localScale = new Vector3(-ScaleX, ScaleY, 0);
             }
         }
-        if(CurrentEnergy<=0)//死亡
-        {            
-            Destroy(gameObject);
+        if(Stage==-1)
+        {
+            gameObject.tag = "body";
         }
     }
     public void Multiply()//繁殖
@@ -83,7 +152,7 @@ public class Character : MonoBehaviour
             }
             CurrentEnergy -= MultiplyCost;
             BirthColdTimer=BirthCold;
-        
+        Stage = 0;
     }
     public void FindClosestTarget()//寻找最近同类
     {
@@ -100,6 +169,26 @@ public class Character : MonoBehaviour
                 MultiplyTarget=target;
             }
         }        
+    }
+    public void FindClosestDanger()//寻找最近威胁对象
+    {
+        TargetDistance = float.MaxValue;
+        RunTarget = null;
+        foreach (GameObject target in DangerousAnimal)
+        {
+            float distance = Vector3.Distance(transform.position, target.transform.position);
+            if (distance < TargetDistance && target != this.gameObject&&distance<=LookDistance)
+            {
+                TargetDistance = distance;
+                RunTargetAngle = new Vector3(target.transform.position.x - transform.position.x, target.transform.position.y - transform.position.y, 0).normalized;
+               RunTarget = target;
+            }
+            if (distance > LookDistance)
+            {
+                RunTarget = null;
+                Stage = 0;
+            }
+        }
     }
     public void FindBaby()//寻找附近幼崽
     {
@@ -138,9 +227,49 @@ public class Character : MonoBehaviour
     }
     public void Variation()//继承变异
     {
-        MaxEnergy = (Father.GetComponent<Character>().MaxEnergy + Mother.GetComponent<Character>().MaxEnergy)*0.4f + Random.Range(0, 30.0f)*0.2f;
-        Speed = (Father.GetComponent<Character>().Speed + Mother.GetComponent<Character>().Speed) * 0.4f + Random.Range(0, 1.0f) * 0.2f;
-        BirthAmount = (int)((Father.GetComponent<Character>().BirthAmount + Mother.GetComponent<Character>().BirthAmount) * 0.4f + Random.Range(0, 2.0f) * 0.2f);
-        BirthCold = (Father.GetComponent<Character>().BirthCold + Mother.GetComponent<Character>().BirthCold) * 0.4f + Random.Range(0, 10.0f) * 0.2f;
+        MaxEnergy = (Father.GetComponent<Character>().MaxEnergy + Mother.GetComponent<Character>().MaxEnergy)*0.4f + Random.Range(0, 200.0f)*0.2f;
+        Speed = (Father.GetComponent<Character>().Speed + Mother.GetComponent<Character>().Speed) * 0.4f + Random.Range(0, 2.0f) * 0.2f;
+        BirthAmount = (int)((Father.GetComponent<Character>().BirthAmount + Mother.GetComponent<Character>().BirthAmount) * 0.4f + Random.Range(0, 11.0f) * 0.2f);
+        BirthCold = (Father.GetComponent<Character>().BirthCold + Mother.GetComponent<Character>().BirthCold) * 0.4f + Random.Range(0, 60.0f) * 0.2f;
+    }
+     IEnumerator Walk()
+    {
+        
+        if (!isdecide)
+        {
+             walktimer = Random.Range(1.0f, 5.0f);
+             x = Random.Range(-1f, 1f);
+             y = Random.Range(-1f, 1f);            
+            isdecide = true;
+        }
+        walktimer-=Time.deltaTime;
+        Vector3 angle =new Vector3 (x, y, 0);
+        if (walktimer > 0)
+        {
+            transform.position += Speed * angle.normalized * Time.deltaTime;
+        }
+        else
+        {
+            isdecide=false;
+        }
+        yield return null;
+    }
+    public bool IfAdd(float a)//判断变量增加或减少
+    {
+        float lasttime=0,lasta=0;        
+        float change=a-lasta;
+        if (change >= 0)
+        {
+            lasta = a;
+            lasttime = Time.time;
+            return true;
+        }
+        else
+        {
+            lasta = a;
+            lasttime = Time.time;
+            return false;
+        }
+        
     }
 }

@@ -272,7 +272,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 2
-  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_BackGroundColor: {r: 0.102547266, g: 0.38364768, b: 0.13378066, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -297,7 +297,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 5
+  orthographic size: 10
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -338,11 +338,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1169279307885092969, guid: 4af6513d60a66254699cb9cff586ea9d, type: 3}
       propertyPath: GrowCold
-      value: 7
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 1169279307885092969, guid: 4af6513d60a66254699cb9cff586ea9d, type: 3}
       propertyPath: MaxEnergy
-      value: 50
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 5966943165580952775, guid: 4af6513d60a66254699cb9cff586ea9d, type: 3}
       propertyPath: m_LocalPosition.x
@@ -459,7 +459,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4386976644211860510, guid: db51a303b0ebdb6439d4b80345110a4b, type: 3}
       propertyPath: m_Name
-      value: Ship
+      value: Sheep
+      objectReference: {fileID: 0}
+    - target: {fileID: 4386976644211860510, guid: db51a303b0ebdb6439d4b80345110a4b, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4386976644211860510, guid: db51a303b0ebdb6439d4b80345110a4b, type: 3}
+      propertyPath: m_TagString
+      value: sheep
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -744,7 +752,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4386976644211860510, guid: db51a303b0ebdb6439d4b80345110a4b, type: 3}
       propertyPath: m_Name
-      value: Ship (1)
+      value: Sheep(1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 4386976644211860510, guid: db51a303b0ebdb6439d4b80345110a4b, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4386976644211860510, guid: db51a303b0ebdb6439d4b80345110a4b, type: 3}
+      propertyPath: m_TagString
+      value: sheep
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
