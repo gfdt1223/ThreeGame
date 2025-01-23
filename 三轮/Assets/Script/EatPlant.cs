@@ -32,7 +32,7 @@ public class EatPlant : MonoBehaviour
                 character.Stage = 1;
                 Eat();
             }
-            else if (character.Stage != 2)
+            else if (character.Stage != 2&&character.Stage!=3)
             {
                 character.Stage = 0;
             }

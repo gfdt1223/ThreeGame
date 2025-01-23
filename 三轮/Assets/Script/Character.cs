@@ -9,6 +9,8 @@ public class Character : MonoBehaviour
     public float MaxEnergy;//最大能量
     public float CurrentEnergy;//现有能量
     public float EnergyCost;//能量消耗
+    public float RunTime;//最大奔跑时间（体力）
+    public float RunTimer;//体力计时器
     public float Age;//年龄
     public float OldAge;//衰老年龄
     public float MultiplyAge;//可以繁殖年龄
@@ -38,6 +40,8 @@ public class Character : MonoBehaviour
     public Vector3 RunTargetAngle;//奔跑对象方向
     public float LookDistance;//侦察距离
     public bool isFood;//是否为猎物
+    public Together Together;
+    public bool isEndRest;//体力是否恢复
     void Start()
     {
         SameAnimal = GameObject.FindGameObjectsWithTag(tag);//寻找所有同类
@@ -56,14 +60,28 @@ public class Character : MonoBehaviour
         CurrentEnergy = MaxEnergy*0.5f;
         BirthColdTimer = BirthCold;
         Stage = 0;
+        RunTimer=RunTime;
+        isEndRest = true;
     }
 
     // Update is called once per frame
     void Update()
     {
+        if(MultiplyTarget == null&&Stage==2)
+        {
+            Stage = 0;
+        }
+        if(BirthAmount == 0)//防止后代数量小于1
+        {
+            BirthAmount = 1;
+        }
         if (isFood)
         {
             DangerousAnimal = GameObject.FindGameObjectsWithTag("wolf");//寻找威胁对象
+        }
+        if (TargetDistance < 1 && Stage != 2)
+        {
+            transform.position-=Speed*TargetAngle*Time.deltaTime;
         }
         ScaleX =transform.localScale.x;
         ScaleY=transform.localScale.y;
@@ -72,22 +90,38 @@ public class Character : MonoBehaviour
             Age += Time.deltaTime * 0.1f;//年龄增长
             BirthColdTimer -= Time.deltaTime;
             CurrentEnergy -= EnergyCost * Time.deltaTime * 0.5f;//能量消耗
+            if (Stage != 3&&RunTimer<RunTime)
+            {
+                RunTimer += Time.deltaTime;
+            }
+            if(RunTimer>=RunTime*0.95f)
+            {
+                isEndRest=true;
+            }
             if (DangerousAnimal != null)
             {
                 FindClosestDanger();
             }
-            if (RunTarget!=null||(!isFood&&Stage==3))//逃跑或追击
+            if (RunTarget!=null&&isEndRest&&isFood&&RunTarget.GetComponent<Character>().Stage==3)//逃跑或追击
             {
                 Stage = 3;
-                CurrentEnergy -= EnergyCost * Time.deltaTime;//能量加速消耗       
-                if (isFood)
+                if (Stage == 3)
                 {
-                    transform.position -= Speed * RunTargetAngle * Time.deltaTime;
+                    RunTimer -= Time.deltaTime;
+                    if (isFood)
+                    {
+                        transform.position -= Speed * RunTargetAngle * Time.deltaTime * 1.5f;
+                    }
+                    else
+                    {
+                        transform.position += Speed * RunTargetAngle * Time.deltaTime * 1.5f;
+                    }
                 }
-                else
-                {
-                    transform.position += Speed * RunTargetAngle * Time.deltaTime;
-                }
+            }
+            if (RunTimer < 0 && Stage == 3)
+            {
+                Stage = 0;
+                isEndRest = false;
             }
             SameAnimal = GameObject.FindGameObjectsWithTag(tag);//寻找所有同类
            
@@ -183,7 +217,7 @@ public class Character : MonoBehaviour
                 RunTargetAngle = new Vector3(target.transform.position.x - transform.position.x, target.transform.position.y - transform.position.y, 0).normalized;
                RunTarget = target;
             }
-            if (distance > LookDistance)
+            if (distance > LookDistance&&Stage==3)
             {
                 RunTarget = null;
                 Stage = 0;
@@ -227,10 +261,10 @@ public class Character : MonoBehaviour
     }
     public void Variation()//继承变异
     {
-        MaxEnergy = (Father.GetComponent<Character>().MaxEnergy + Mother.GetComponent<Character>().MaxEnergy)*0.4f + Random.Range(0, 200.0f)*0.2f;
-        Speed = (Father.GetComponent<Character>().Speed + Mother.GetComponent<Character>().Speed) * 0.4f + Random.Range(0, 2.0f) * 0.2f;
-        BirthAmount = (int)((Father.GetComponent<Character>().BirthAmount + Mother.GetComponent<Character>().BirthAmount) * 0.4f + Random.Range(0, 11.0f) * 0.2f);
-        BirthCold = (Father.GetComponent<Character>().BirthCold + Mother.GetComponent<Character>().BirthCold) * 0.4f + Random.Range(0, 60.0f) * 0.2f;
+        MaxEnergy = (Father.GetComponent<Character>().MaxEnergy + Mother.GetComponent<Character>().MaxEnergy) * Random.Range(0.4f, 0.6f);
+        Speed = (Father.GetComponent<Character>().Speed + Mother.GetComponent<Character>().Speed) * Random.Range(0.4f, 0.6f);
+        BirthAmount = (int)((Father.GetComponent<Character>().BirthAmount + Mother.GetComponent<Character>().BirthAmount)*Random.Range(0.4f, 0.6f));
+        BirthCold = (Father.GetComponent<Character>().BirthCold + Mother.GetComponent<Character>().BirthCold) * Random.Range(0.4f, 0.6f);
     }
      IEnumerator Walk()
     {
@@ -243,7 +277,22 @@ public class Character : MonoBehaviour
             isdecide = true;
         }
         walktimer-=Time.deltaTime;
-        Vector3 angle =new Vector3 (x, y, 0);
+        Vector3 angle;      
+         if(Together!=null)
+        {
+            if (Together.isNeedBack)
+            {
+                angle = Together.angle;
+            }
+            else
+            {
+                angle = new Vector3(x, y, 0);
+            }
+        }
+        else
+        {
+            angle = new Vector3(x, y, 0);
+        }
         if (walktimer > 0)
         {
             transform.position += Speed * angle.normalized * Time.deltaTime;

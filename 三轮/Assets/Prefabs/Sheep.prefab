@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 4100226147307447434}
   - component: {fileID: 593817713105077518}
   - component: {fileID: 7090644247102934970}
+  - component: {fileID: 7727172340420228877}
   m_Layer: 0
   m_Name: Sheep
   m_TagString: sheep
@@ -102,12 +103,14 @@ MonoBehaviour:
   MaxEnergy: 100
   CurrentEnergy: 0
   EnergyCost: 1
+  RunTime: 3
+  RunTimer: 0
   Age: 0
   OldAge: 10
   MultiplyAge: 1
   Speed: 1
   isCanMultiply: 0
-  BirthAmount: 1
+  BirthAmount: 2
   BirthCold: 30
   BirthColdTimer: 0
   MultiplyCost: 50
@@ -124,8 +127,10 @@ MonoBehaviour:
   RunTarget: {fileID: 0}
   DangerousAnimal: []
   RunTargetAngle: {x: 0, y: 0, z: 0}
-  LookDistance: 10
+  LookDistance: 5
   isFood: 1
+  Together: {fileID: 7727172340420228877}
+  isEndRest: 0
 --- !u!114 &593817713105077518
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -167,3 +172,23 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &7727172340420228877
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4386976644211860510}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 971a829455e2d84458a1620e441a2441, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  character: {fileID: 4100226147307447434}
+  Center: {x: 0, y: 0, z: 0}
+  Sum: {x: 0, y: 0, z: 0}
+  Amount: 0
+  MaxDistance: 8
+  Distance: 0
+  angle: {x: 0, y: 0, z: 0}
+  isNeedBack: 0

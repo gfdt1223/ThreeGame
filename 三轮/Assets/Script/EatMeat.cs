@@ -15,9 +15,10 @@ public class EatMeat : MonoBehaviour
     public float EatCold;//获取能量冷却时间
     public float EatColdTimer;//获取能量冷却计时器
     public float mindistance;//最小距离
+    public bool isDuring;//是否正在捕食
     void Start()
     {
-        
+        isDuring=false;
     }
 
     // Update is called once per frame
@@ -28,20 +29,30 @@ public class EatMeat : MonoBehaviour
             AnimalCanBeEat = GameObject.FindGameObjectsWithTag("sheep");
             Body = GameObject.FindGameObjectsWithTag("body");
             EatColdTimer -= Time.deltaTime;
-            FindAnimal();
-            if (character.MaxEnergy - character.CurrentEnergy > EatAmount && EatTarget != null)
-            {
-                character.Stage = 3;
-                RunToAnimal();
-            }
-            else if(character.Stage!=-1&& character.Stage != 1&&character.Stage != 2)
-            {
-                character.Stage = 0;
-            }
             if (Body != null)
             {
                 FindBody();
             }
+            FindAnimal();
+            if (EatTarget == null && character.Stage == 3)
+            {
+                character.Stage = 0;
+            }
+            if (character.MaxEnergy - character.CurrentEnergy > EatAmount && EatTarget != null && character.RunTimer >=character.RunTime*0.95f&&!isDuring&&BodyTarget==null)
+            {
+                
+                    character.Stage = 3;
+                    isDuring = true;                                              
+            }
+            if (isDuring)
+            {
+                StartCoroutine(RunToAnimal());
+            }
+            if(character.MaxEnergy-character.CurrentEnergy<EatAmount||EatTarget==null)
+            {
+                isDuring = false;
+            }
+                      
         }
     }
     public void FindAnimal()//寻找猎物
@@ -64,16 +75,24 @@ public class EatMeat : MonoBehaviour
             }
         }
     }
-    public void RunToAnimal()//追击猎物
+     IEnumerator RunToAnimal()//追击猎物
     {
-        if (mindistance > EatDistance)
+        if (mindistance > EatDistance&&character.RunTimer>0&&EatTarget!=null)
         {
-            transform.position += character.Speed * (EatTarget.transform.position - transform.position).normalized * Time.deltaTime;
+            character.RunTimer-=Time.deltaTime;
+            transform.position += character.Speed * (EatTarget.transform.position - transform.position).normalized * Time.deltaTime * 1.5f;
         }
-        else 
+        else if (mindistance <= EatDistance)
         {
             EatTarget.GetComponent<Character>().Stage = -1;
         }
+        else
+        {
+            character.Stage = 0;
+            isDuring=false;
+            yield return null;
+        }
+        
     }
     public void FindBody()//寻找尸体
     {
@@ -89,20 +108,28 @@ public class EatMeat : MonoBehaviour
                     BodyTarget = animal;
                 }
             }
+           
         }
-        if (mindistance > EatDistance)
+        if (BodyTarget != null)
         {
-            transform.position += character.Speed * (EatTarget.transform.position - transform.position).normalized * Time.deltaTime;
-        }
-        else
-        {
-            BodyTarget.GetComponent<Character>().CurrentEnergy -= EatAmount;
-            character.CurrentEnergy += EatAmount;
-            if (BodyTarget.GetComponent<Character>().CurrentEnergy <= 0)
+            if (mindistance > EatDistance)
             {
-                Destroy(BodyTarget);
+                transform.position += character.Speed * (EatTarget.transform.position - transform.position).normalized * Time.deltaTime;
             }
-            EatColdTimer = EatCold;
+            else
+            {
+                BodyTarget.GetComponent<Character>().CurrentEnergy -= EatAmount;
+                character.CurrentEnergy += EatAmount;
+                if (BodyTarget.GetComponent<Character>().CurrentEnergy <= 0)
+                {
+                    Destroy(BodyTarget);
+                }
+                EatColdTimer = EatCold;
+                if (character.MaxEnergy - character.CurrentEnergy < EatAmount && character.Stage != 2)
+                {
+                    character.Stage = 0;
+                }
+            }
         }
     }
 }

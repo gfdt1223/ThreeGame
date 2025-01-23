@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 6790345764998935130}
   - component: {fileID: 3657933765121949919}
   - component: {fileID: 5023914092915845616}
+  - component: {fileID: -5828055045507949664}
   m_Layer: 0
   m_Name: Wolf
   m_TagString: wolf
@@ -98,11 +99,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4b9ad24093711634d86e7d97b4f0236c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MaxEnergy: 100
+  MaxEnergy: 80
   CurrentEnergy: 0
-  EnergyCost: 1.5
+  EnergyCost: 1
+  RunTime: 5
+  RunTimer: 0
   Age: 0
-  OldAge: 10
+  OldAge: 8
   MultiplyAge: 1
   Speed: 1.2
   isCanMultiply: 0
@@ -125,6 +128,8 @@ MonoBehaviour:
   RunTargetAngle: {x: 0, y: 0, z: 0}
   LookDistance: 20
   isFood: 0
+  Together: {fileID: -5828055045507949664}
+  isEndRest: 0
 --- !u!114 &5023914092915845616
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -147,3 +152,24 @@ MonoBehaviour:
   EatCold: 1
   EatColdTimer: 0
   mindistance: 0
+  isDuring: 0
+--- !u!114 &-5828055045507949664
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2339874777457029776}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 971a829455e2d84458a1620e441a2441, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  character: {fileID: 3657933765121949919}
+  Center: {x: 0, y: 0, z: 0}
+  Sum: {x: 0, y: 0, z: 0}
+  Amount: 0
+  MaxDistance: 6
+  Distance: 0
+  angle: {x: 0, y: 0, z: 0}
+  isNeedBack: 0
