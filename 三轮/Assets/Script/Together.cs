@@ -25,7 +25,7 @@ public class Together : MonoBehaviour
     void Update()
     {
         Find();
-        if (Distance > MaxDistance)
+        if (Distance > MaxDistance && character.Stage == 0)
         {
             isNeedBack = true;
         }

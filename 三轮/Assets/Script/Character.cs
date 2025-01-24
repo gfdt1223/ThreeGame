@@ -174,6 +174,7 @@ public class Character : MonoBehaviour
         if(Stage==-1)
         {
             gameObject.tag = "body";
+            Speed = 0;
         }
     }
     public void Multiply()//繁殖
@@ -261,38 +262,35 @@ public class Character : MonoBehaviour
     }
     public void Variation()//继承变异
     {
-        MaxEnergy = (Father.GetComponent<Character>().MaxEnergy + Mother.GetComponent<Character>().MaxEnergy) * Random.Range(0.4f, 0.6f);
-        Speed = (Father.GetComponent<Character>().Speed + Mother.GetComponent<Character>().Speed) * Random.Range(0.4f, 0.6f);
-        BirthAmount = (int)((Father.GetComponent<Character>().BirthAmount + Mother.GetComponent<Character>().BirthAmount)*Random.Range(0.4f, 0.6f));
-        BirthCold = (Father.GetComponent<Character>().BirthCold + Mother.GetComponent<Character>().BirthCold) * Random.Range(0.4f, 0.6f);
+        float RandomNumber = Random.Range(-1.0f, 1.0f);
+        MaxEnergy = (Father.GetComponent<Character>().MaxEnergy + Mother.GetComponent<Character>().MaxEnergy+RandomNumber*10) * Random.Range(0.4f, 0.6f);
+        Speed = (Father.GetComponent<Character>().Speed + Mother.GetComponent<Character>().Speed+ RandomNumber*0.2f) * Random.Range(0.4f, 0.6f);
+        BirthAmount = (int)((Father.GetComponent<Character>().BirthAmount + Mother.GetComponent<Character>().BirthAmount+ RandomNumber) *Random.Range(0.4f, 0.6f));
+        BirthCold = (Father.GetComponent<Character>().BirthCold + Mother.GetComponent<Character>().BirthCold+ RandomNumber*10) * Random.Range(0.4f, 0.6f);
     }
      IEnumerator Walk()
     {
-        
+        Vector3 angle=new Vector3(0,0,0);
         if (!isdecide)
         {
              walktimer = Random.Range(1.0f, 5.0f);
              x = Random.Range(-1f, 1f);
-             y = Random.Range(-1f, 1f);            
-            isdecide = true;
-        }
-        walktimer-=Time.deltaTime;
-        Vector3 angle;      
-         if(Together!=null)
-        {
-            if (Together.isNeedBack)
-            {
-                angle = Together.angle;
-            }
-            else
-            {
-                angle = new Vector3(x, y, 0);
-            }
-        }
-        else
-        {
+             y = Random.Range(-1f, 1f);
             angle = new Vector3(x, y, 0);
-        }
+            isdecide = true;
+            if (Together != null)
+            {
+                if (Together.isNeedBack)
+                {
+                    angle = Together.angle;
+                }
+                else
+                {
+                    angle = new Vector3(x, y, 0);
+                }
+            }
+        }                  
+        
         if (walktimer > 0)
         {
             transform.position += Speed * angle.normalized * Time.deltaTime;
@@ -301,6 +299,7 @@ public class Character : MonoBehaviour
         {
             isdecide=false;
         }
+        walktimer -= Time.deltaTime;
         yield return null;
     }
     public bool IfAdd(float a)//判断变量增加或减少
