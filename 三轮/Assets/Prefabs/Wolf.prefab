@@ -126,7 +126,7 @@ MonoBehaviour:
   RunTarget: {fileID: 0}
   DangerousAnimal: []
   RunTargetAngle: {x: 0, y: 0, z: 0}
-  LookDistance: 20
+  LookDistance: 200
   isFood: 0
   Together: {fileID: -5828055045507949664}
   isEndRest: 0
@@ -173,3 +173,6 @@ MonoBehaviour:
   Distance: 0
   angle: {x: 0, y: 0, z: 0}
   isNeedBack: 0
+  Angle: {x: 0, y: 0, z: 0}
+  Position: {x: 0, y: 0, z: 0}
+  MinObject: {fileID: 0}

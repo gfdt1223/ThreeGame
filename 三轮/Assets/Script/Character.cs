@@ -79,7 +79,7 @@ public class Character : MonoBehaviour
         {
             DangerousAnimal = GameObject.FindGameObjectsWithTag("wolf");//Ñ°ÕÒÍşĞ²¶ÔÏó
         }
-        if (TargetDistance < 1 && Stage != 2)
+        if (TargetDistance < 1 && Stage != 2&&Stage!=-1)
         {
             transform.position-=Speed*TargetAngle*Time.deltaTime;
         }
@@ -175,6 +175,8 @@ public class Character : MonoBehaviour
         {
             gameObject.tag = "body";
             Speed = 0;
+            RunTimer = 0;
+            StopAllCoroutines();
         }
     }
     public void Multiply()//·±Ö³

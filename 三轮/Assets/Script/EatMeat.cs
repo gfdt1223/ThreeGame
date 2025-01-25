@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.SceneManagement;
 using UnityEngine;
 
 public class EatMeat : MonoBehaviour
@@ -48,9 +49,14 @@ public class EatMeat : MonoBehaviour
             {
                 StartCoroutine(RunToAnimal());
             }
-            if(character.MaxEnergy-character.CurrentEnergy<EatAmount||EatTarget==null)
+            else
+            {
+                StopCoroutine(RunToAnimal());
+            }
+            if(character.MaxEnergy-character.CurrentEnergy<EatAmount||EatTarget==null||Body!=null)
             {
                 isDuring = false;
+                character.Stage = 0;
             }
                       
         }
@@ -63,7 +69,7 @@ public class EatMeat : MonoBehaviour
             if (animal != null)
             {
                 float distance = Vector3.Distance(transform.position, animal.transform.position);
-                if (distance < mindistance&&distance<=character.LookDistance)
+                if (distance < mindistance&&distance<=character.LookDistance && animal.GetComponent<Character>().Stage != -1)
                 {
                     mindistance = distance;
                     EatTarget = animal;
@@ -77,21 +83,20 @@ public class EatMeat : MonoBehaviour
     }
      IEnumerator RunToAnimal()//追击猎物
     {
-        if (mindistance > EatDistance&&character.RunTimer>0&&EatTarget!=null)
+        if (mindistance > EatDistance&&character.RunTimer>0&&EatTarget!=null&&character.Stage==3)//向猎物方向移动
         {
             character.RunTimer-=Time.deltaTime;
             transform.position += character.Speed * (EatTarget.transform.position - transform.position).normalized * Time.deltaTime * 1.5f;
         }
-        else if (mindistance <= EatDistance)
+        if (mindistance <= EatDistance)//使猎物变为尸体
         {
-            EatTarget.GetComponent<Character>().Stage = -1;
+            EatTarget.GetComponent<Character>().Stage = -1;          
+                character.Stage = 0;
+                isDuring = false;
+                yield return null;
+            
         }
-        else
-        {
-            character.Stage = 0;
-            isDuring=false;
-            yield return null;
-        }
+        
         
     }
     public void FindBody()//寻找尸体
@@ -116,16 +121,24 @@ public class EatMeat : MonoBehaviour
             {
                 transform.position += character.Speed * (EatTarget.transform.position - transform.position).normalized * Time.deltaTime;
             }
-            else
+            else if(EatColdTimer<=0)
             {
-                BodyTarget.GetComponent<Character>().CurrentEnergy -= EatAmount;
-                character.CurrentEnergy += EatAmount;
-                if (BodyTarget.GetComponent<Character>().CurrentEnergy <= 0)
+                if (BodyTarget.GetComponent<Character>().CurrentEnergy >= EatAmount)//获取尸体能量
+                {
+                    BodyTarget.GetComponent<Character>().CurrentEnergy -= EatAmount;
+                    character.CurrentEnergy += EatAmount;
+                }
+                else
+                {
+                    character.CurrentEnergy += BodyTarget.GetComponent<Character>().CurrentEnergy;
+                    BodyTarget.GetComponent<Character>().CurrentEnergy =0;                    
+                }
+                if (BodyTarget.GetComponent<Character>().CurrentEnergy <= 0)//尸体能量小于零摧毁尸体
                 {
                     Destroy(BodyTarget);
                 }
                 EatColdTimer = EatCold;
-                if (character.MaxEnergy - character.CurrentEnergy < EatAmount && character.Stage != 2)
+                if (character.MaxEnergy - character.CurrentEnergy < EatAmount && character.Stage != 2)//回到巡逻状态
                 {
                     character.Stage = 0;
                 }
