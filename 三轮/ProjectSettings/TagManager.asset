@@ -9,6 +9,7 @@ TagManager:
   - ship
   - wolf
   - body
+  - tall grass
   layers:
   - Default
   - TransparentFX

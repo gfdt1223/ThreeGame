@@ -9,8 +9,6 @@ public class Character : MonoBehaviour
     public float MaxEnergy;//最大能量
     public float CurrentEnergy;//现有能量
     public float EnergyCost;//能量消耗
-    public float RunTime;//最大奔跑时间（体力）
-    public float RunTimer;//体力计时器
     public float Age;//年龄
     public float OldAge;//衰老年龄
     public float MultiplyAge;//可以繁殖年龄
@@ -20,6 +18,7 @@ public class Character : MonoBehaviour
     public float BirthCold;//繁殖冷却时间
     public float BirthColdTimer;//繁殖冷却计时器
     public float MultiplyCost;//繁殖消耗能量   
+    public float MultiplyRandom;//繁殖随机数
     public GameObject[] SameAnimal;//所有同类生物
     public GameObject MultiplyTarget;//交配对象
     public int BabyAmount;//附近幼崽数量
@@ -28,28 +27,18 @@ public class Character : MonoBehaviour
     public GameObject Father;//父对象
     public GameObject Mother;//母对象
     public float mindistance;
-    public int Stage;//状态(-1死亡，0巡逻，1觅食，2繁殖,3奔跑)
+    public int Stage;//状态(-1死亡，0巡逻，1觅食，2繁殖)
     public bool isdecide;//是否决定巡逻方向
     float walktimer;
     float x;
     float y;
     float ScaleX;
     float ScaleY;
-    public GameObject RunTarget;//奔跑对象
-    public GameObject[] DangerousAnimal;//威胁对象
-    public Vector3 RunTargetAngle;//奔跑对象方向
     public float LookDistance;//侦察距离
-    public bool isFood;//是否为猎物
     public Together Together;
-    public bool isEndRest;//体力是否恢复
     void Start()
     {
         SameAnimal = GameObject.FindGameObjectsWithTag(tag);//寻找所有同类
-        if (isFood)
-        {
-            DangerousAnimal = GameObject.FindGameObjectsWithTag("wolf");//寻找威胁对象
-        }
-   
         FindParents();
         if (Father != null && Mother != null)
         {
@@ -57,11 +46,9 @@ public class Character : MonoBehaviour
         }
         Age = 0;
         BabyAmount = 0;
-        CurrentEnergy = MaxEnergy*0.5f;
+        CurrentEnergy = MaxEnergy;
         BirthColdTimer = BirthCold;
         Stage = 0;
-        RunTimer=RunTime;
-        isEndRest = true;
     }
 
     // Update is called once per frame
@@ -75,10 +62,6 @@ public class Character : MonoBehaviour
         {
             BirthAmount = 1;
         }
-        if (isFood)
-        {
-            DangerousAnimal = GameObject.FindGameObjectsWithTag("wolf");//寻找威胁对象
-        }
         if (TargetDistance < 1 && Stage != 2&&Stage!=-1)
         {
             transform.position-=Speed*TargetAngle*Time.deltaTime;
@@ -87,42 +70,9 @@ public class Character : MonoBehaviour
         ScaleY=transform.localScale.y;
         if (Stage != -1)
         {
-            Age += Time.deltaTime * 0.1f;//年龄增长
+            Age += Time.deltaTime * 0.02f;//年龄增长
             BirthColdTimer -= Time.deltaTime;
-            CurrentEnergy -= EnergyCost * Time.deltaTime * 0.5f;//能量消耗
-            if (Stage != 3&&RunTimer<RunTime)
-            {
-                RunTimer += Time.deltaTime;
-            }
-            if(RunTimer>=RunTime*0.95f)
-            {
-                isEndRest=true;
-            }
-            if (DangerousAnimal != null)
-            {
-                FindClosestDanger();
-            }
-            if (RunTarget!=null&&isEndRest&&isFood&&RunTarget.GetComponent<Character>().Stage==3)//逃跑或追击
-            {
-                Stage = 3;
-                if (Stage == 3)
-                {
-                    RunTimer -= Time.deltaTime;
-                    if (isFood)
-                    {
-                        transform.position -= Speed * RunTargetAngle * Time.deltaTime * 1.5f;
-                    }
-                    else
-                    {
-                        transform.position += Speed * RunTargetAngle * Time.deltaTime * 1.5f;
-                    }
-                }
-            }
-            if (RunTimer < 0 && Stage == 3)
-            {
-                Stage = 0;
-                isEndRest = false;
-            }
+            CurrentEnergy -= EnergyCost * Time.deltaTime * 0.5f;//能量消耗                       
             SameAnimal = GameObject.FindGameObjectsWithTag(tag);//寻找所有同类
            
             if (CurrentEnergy > MultiplyCost && Age >= MultiplyAge && BirthColdTimer <= 0)//符合繁殖条件
@@ -134,7 +84,7 @@ public class Character : MonoBehaviour
                 isCanMultiply = false;
             }
             FindClosestTarget();
-            if (isCanMultiply && MultiplyTarget != null&&Stage!=3)//开始繁殖
+            if (isCanMultiply && MultiplyTarget != null)//开始繁殖
             {
                 Stage = 2;
                 if (TargetDistance > 1)//靠近
@@ -152,7 +102,8 @@ public class Character : MonoBehaviour
             }
             if (Age >= OldAge)//衰老
             {
-                MaxEnergy -= Time.deltaTime * 0.5f;
+                MaxEnergy -= Time.deltaTime ;
+                isCanMultiply=false;
             }
             if (Stage == 0)
             {
@@ -175,27 +126,32 @@ public class Character : MonoBehaviour
         {
             gameObject.tag = "body";
             Speed = 0;
-            RunTimer = 0;
             StopAllCoroutines();
         }
     }
     public void Multiply()//繁殖
-    {               
-            FindBaby();
-            while(BabyAmount<BirthAmount)
+    {
+        MultiplyRandom = Random.Range(-1.0f, 1.0f);
+        FindBaby();
+        if (MultiplyRandom >= MultiplyTarget.GetComponent<Character>().MultiplyRandom)
+        {
+            while (BabyAmount < BirthAmount)
             {
-                Instantiate(MultiplyTarget);               
+                Instantiate(MultiplyTarget);
                 BabyAmount++;
+                Debug.Log(gameObject.name);
             }
-            CurrentEnergy -= MultiplyCost;
-            BirthColdTimer=BirthCold;
+        }
+          CurrentEnergy -= MultiplyCost;
+          BirthColdTimer=BirthCold;
+        isCanMultiply = false;
+        BabyAmount = 0;
         Stage = 0;
     }
     public void FindClosestTarget()//寻找最近同类
     {
-
-        TargetDistance = float.MaxValue;
         MultiplyTarget = null;
+        TargetDistance = float.MaxValue;
         foreach (GameObject target in SameAnimal)
         {
             float distance=Vector3.Distance(transform.position,target.transform.position);
@@ -207,33 +163,33 @@ public class Character : MonoBehaviour
             }
         }        
     }
-    public void FindClosestDanger()//寻找最近威胁对象
-    {
-        TargetDistance = float.MaxValue;
-        RunTarget = null;
-        foreach (GameObject target in DangerousAnimal)
-        {
-            float distance = Vector3.Distance(transform.position, target.transform.position);
-            if (distance < TargetDistance && target != this.gameObject&&distance<=LookDistance)
-            {
-                TargetDistance = distance;
-                RunTargetAngle = new Vector3(target.transform.position.x - transform.position.x, target.transform.position.y - transform.position.y, 0).normalized;
-               RunTarget = target;
-            }
-            if (distance > LookDistance&&Stage==3)
-            {
-                RunTarget = null;
-                Stage = 0;
-            }
-        }
-    }
+    //public void FindClosestDanger()//寻找最近威胁对象
+    //{
+    //    TargetDistance = float.MaxValue;
+    //    RunTarget = null;
+    //    foreach (GameObject target in DangerousAnimal)
+    //    {
+    //        float distance = Vector3.Distance(transform.position, target.transform.position);
+    //        if (distance < TargetDistance && target != this.gameObject&&distance<=LookDistance)
+    //        {
+    //            TargetDistance = distance;
+    //            RunTargetAngle = new Vector3(target.transform.position.x - transform.position.x, target.transform.position.y - transform.position.y, 0).normalized;
+    //           RunTarget = target;
+    //        }
+    //        if (distance > LookDistance&&Stage==3)
+    //        {
+    //            RunTarget = null;
+    //            Stage = 0;
+    //        }
+    //    }
+    //}
     public void FindBaby()//寻找附近幼崽
     {
         BabyAmount = 0;
         foreach (GameObject baby in SameAnimal)
         {
             float distance = Vector3.Distance(transform.position, baby.transform.position);
-            if (baby.GetComponent<Character>().Age <= 0.1f&&distance<=3)
+            if (baby.GetComponent<Character>().Age <= 0.4f && distance <= 2)
             {
                 BabyAmount++;
             }

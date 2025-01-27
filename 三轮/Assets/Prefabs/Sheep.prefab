@@ -100,20 +100,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4b9ad24093711634d86e7d97b4f0236c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MaxEnergy: 100
+  MaxEnergy: 200
   CurrentEnergy: 0
   EnergyCost: 1
-  RunTime: 3
-  RunTimer: 0
   Age: 0
-  OldAge: 10
+  OldAge: 5
   MultiplyAge: 1
   Speed: 1
   isCanMultiply: 0
   BirthAmount: 2
-  BirthCold: 30
+  BirthCold: 120
   BirthColdTimer: 0
-  MultiplyCost: 50
+  MultiplyCost: 80
+  MultiplyRandom: 0
   SameAnimal: []
   MultiplyTarget: {fileID: 0}
   BabyAmount: 0
@@ -124,13 +123,8 @@ MonoBehaviour:
   mindistance: 0
   Stage: 0
   isdecide: 0
-  RunTarget: {fileID: 0}
-  DangerousAnimal: []
-  RunTargetAngle: {x: 0, y: 0, z: 0}
   LookDistance: 5
-  isFood: 1
   Together: {fileID: 7727172340420228877}
-  isEndRest: 0
 --- !u!114 &593817713105077518
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -192,3 +186,6 @@ MonoBehaviour:
   Distance: 0
   angle: {x: 0, y: 0, z: 0}
   isNeedBack: 0
+  Angle: {x: 0, y: 0, z: 0}
+  Position: {x: 0, y: 0, z: 0}
+  MinObject: {fileID: 0}

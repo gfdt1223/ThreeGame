@@ -1,5 +1,8 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using Unity.VisualScripting;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 
@@ -24,7 +27,9 @@ public class EatPlant : MonoBehaviour
     {
         if (character.Stage != -1)
         {
-            Plant = GameObject.FindGameObjectsWithTag("grass");
+            GameObject[] Grass= GameObject.FindGameObjectsWithTag("grass");
+            GameObject[] TallGrass = GameObject.FindGameObjectsWithTag("tall grass");
+            Plant=Grass.Concat(TallGrass).ToArray();
             EatColdTimer -= Time.deltaTime;
             FindPlant();
             if (character.MaxEnergy - character.CurrentEnergy > EatAmount && EatTarget != null&&character.Stage!=3)
