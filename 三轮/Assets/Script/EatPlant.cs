@@ -17,9 +17,10 @@ public class EatPlant : MonoBehaviour
     public float EatCold;//获取能量冷却时间
     public float EatColdTimer;//获取能量冷却计时器
     public float mindistance;//最小距离
+    public string[] EatTag;
     void Start()
     {
-        
+        Array.Resize(ref Plant, 200);
     }
 
     // Update is called once per frame
@@ -27,17 +28,25 @@ public class EatPlant : MonoBehaviour
     {
         if (character.Stage != -1)
         {
-            GameObject[] Grass= GameObject.FindGameObjectsWithTag("grass");
-            GameObject[] TallGrass = GameObject.FindGameObjectsWithTag("tall grass");
-            Plant=Grass.Concat(TallGrass).ToArray();
+            for (int i = 0; i < EatTag.Length; i++)
+            {
+                if (i == 0)
+                {
+                    GameObject.FindGameObjectsWithTag(EatTag[i]).CopyTo(Plant, 0);
+                }
+                else
+                {
+                    GameObject.FindGameObjectsWithTag(EatTag[i]).CopyTo(Plant, GameObject.FindGameObjectsWithTag(EatTag[i - 1]).Length);
+                }
+            }
             EatColdTimer -= Time.deltaTime;
             FindPlant();
-            if (character.MaxEnergy - character.CurrentEnergy > EatAmount && EatTarget != null&&character.Stage!=3)
+            if (character.MaxEnergy - character.CurrentEnergy > EatAmount && EatTarget != null&&character.Stage!=2)
             {
                 character.Stage = 1;
                 Eat();
             }
-            else if (character.Stage != 2&&character.Stage!=3)
+            else if (character.MaxEnergy - character.CurrentEnergy < EatAmount&&character.Stage!=2)
             {
                 character.Stage = 0;
             }

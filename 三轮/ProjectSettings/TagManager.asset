@@ -10,6 +10,7 @@ TagManager:
   - wolf
   - body
   - tall grass
+  - ox
   layers:
   - Default
   - TransparentFX

@@ -36,8 +36,11 @@ public class Character : MonoBehaviour
     float ScaleY;
     public float LookDistance;//侦察距离
     public Together Together;
+    public bool isCanBeEat;//是否处于可以被捕食状态
     void Start()
     {
+        isCanBeEat = true;
+        TargetDistance = float.MaxValue;
         SameAnimal = GameObject.FindGameObjectsWithTag(tag);//寻找所有同类
         FindParents();
         if (Father != null && Mother != null)
@@ -74,8 +77,11 @@ public class Character : MonoBehaviour
             BirthColdTimer -= Time.deltaTime;
             CurrentEnergy -= EnergyCost * Time.deltaTime * 0.5f;//能量消耗                       
             SameAnimal = GameObject.FindGameObjectsWithTag(tag);//寻找所有同类
-           
-            if (CurrentEnergy > MultiplyCost && Age >= MultiplyAge && BirthColdTimer <= 0)//符合繁殖条件
+           if(CurrentEnergy>MaxEnergy)//超出能量加速消耗
+            {
+                CurrentEnergy-=EnergyCost*Time.deltaTime*0.5f;
+            }
+            if (CurrentEnergy > MultiplyCost && Age >= MultiplyAge&&Age<=OldAge && BirthColdTimer <= 0)//符合繁殖条件
             {
                 isCanMultiply = true;
             }
@@ -93,7 +99,8 @@ public class Character : MonoBehaviour
                 }
                 else
                 {
-                    Multiply();
+                    Debug.Log("111");
+                    Multiply();                    
                 }
             }
             if (CurrentEnergy <= 0)//死亡
@@ -138,13 +145,11 @@ public class Character : MonoBehaviour
             while (BabyAmount < BirthAmount)
             {
                 Instantiate(MultiplyTarget);
-                BabyAmount++;
-                Debug.Log(gameObject.name);
+                BabyAmount++;                
             }
         }
           CurrentEnergy -= MultiplyCost;
           BirthColdTimer=BirthCold;
-        isCanMultiply = false;
         BabyAmount = 0;
         Stage = 0;
     }

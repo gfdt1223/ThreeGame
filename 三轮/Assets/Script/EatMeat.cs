@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor.SceneManagement;
@@ -12,9 +13,12 @@ public class EatMeat : MonoBehaviour
     public float EatCold;//获取能量冷却时间
     public float EatColdTimer;//获取能量冷却计时器
     public float mindistance;//最小距离
+    public float DefendRandom;//抵抗随机数
+    public string[] EatTag;
+    
     void Start()
     {
-
+        Array.Resize(ref AnimalCanBeEat, 50);
     }
 
     // Update is called once per frame
@@ -22,7 +26,18 @@ public class EatMeat : MonoBehaviour
     {
         if (character.Stage != -1)
         {
-            AnimalCanBeEat = GameObject.FindGameObjectsWithTag("sheep");
+            for (int i = 0; i < EatTag.Length; i++)
+            {
+                if (i == 0)
+                {
+                    GameObject.FindGameObjectsWithTag(EatTag[i]).CopyTo(AnimalCanBeEat, 0);                  
+                }
+                else
+                {
+                    GameObject.FindGameObjectsWithTag(EatTag[i]).CopyTo(AnimalCanBeEat, GameObject.FindGameObjectsWithTag(EatTag[i-1]).Length);                
+                }
+
+            }
             EatColdTimer -= Time.deltaTime;
             FindAnimal();          
             if (character.MaxEnergy - character.CurrentEnergy > character.MultiplyCost && EatTarget != null)
@@ -44,7 +59,7 @@ public class EatMeat : MonoBehaviour
             if (animal != null)
             {
                 float distance = Vector3.Distance(transform.position, animal.transform.position);
-                if (distance < mindistance && distance <= character.LookDistance)
+                if (distance < mindistance && distance <= character.LookDistance&&animal.GetComponent<Character>().isCanBeEat)
                 {
                     mindistance = distance;
                     EatTarget = animal;
@@ -55,13 +70,40 @@ public class EatMeat : MonoBehaviour
                 }
                 if (distance <= 1 && character.Stage == 1)
                 {
-                    character.CurrentEnergy += 0.5f * EatTarget.GetComponent<Character>().CurrentEnergy;
-                    Destroy(EatTarget);
+                    if (EatTarget.GetComponent<Defend>() != null)//是否含有抵抗组件
+                    {
+                        if (!EatTarget.GetComponent<Defend>().isdefend)//是否可以抵抗
+                        {
+                            character.CurrentEnergy += 0.5f * EatTarget.GetComponent<Character>().CurrentEnergy;
+                            Destroy(EatTarget);
+                        }
+                        else
+                        {
+                            DefendRandom = UnityEngine.Random.Range(-1.0f, 1.0f);
+                            if (DefendRandom > 0)//抵抗成功
+                            {
+                                EatTarget.GetComponent<Defend>().defendtimer = EatTarget.GetComponent<Defend>().defendtime;
+                                this.GetComponent<Character>().CurrentEnergy -= 30;
+                                this.GetComponent<Character>().CurrentEnergy -= 30;
+                                EatTarget=null;
+                            }
+                            else
+                            {
+                                character.CurrentEnergy += 0.5f * EatTarget.GetComponent<Character>().CurrentEnergy;
+                                Destroy(EatTarget);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        character.CurrentEnergy += 0.5f * EatTarget.GetComponent<Character>().CurrentEnergy;
+                        Destroy(EatTarget);
+                    }
                 }
                 if (distance > 1 && EatTarget != null && character.Stage == 1)//向猎物方向移动
                 {            
                      transform.position += character.Speed * (EatTarget.transform.position - transform.position).normalized * Time.deltaTime * 0.05f;
-                    character.CurrentEnergy-=Time.deltaTime*character.EnergyCost*0.2f;
+                    character.CurrentEnergy-=Time.deltaTime*character.EnergyCost*0.1f;
                 }
             }
         }
