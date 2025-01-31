@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 21554918578216148}
   - component: {fileID: 3564988575715871039}
   - component: {fileID: 6329263290975722431}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Tall Grass
   m_TagString: tall grass
   m_Icon: {fileID: 0}
@@ -73,8 +73,8 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 8a4442a55356a5d4ead2cb2a23b4e64d, type: 3}
+  m_SortingOrder: 1
+  m_Sprite: {fileID: 911312079, guid: 260064aa6ff0d5745bacbd8314f19b27, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0

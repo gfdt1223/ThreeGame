@@ -18,7 +18,7 @@ public class EatMeat : MonoBehaviour
     
     void Start()
     {
-        Array.Resize(ref AnimalCanBeEat, 50);
+        Array.Resize(ref AnimalCanBeEat, 100);
     }
 
     // Update is called once per frame
@@ -64,7 +64,7 @@ public class EatMeat : MonoBehaviour
                     mindistance = distance;
                     EatTarget = animal;
                 }
-                if (character.LookDistance < distance)
+                if (character.LookDistance < mindistance)
                 {
                     EatTarget = null;
                 }

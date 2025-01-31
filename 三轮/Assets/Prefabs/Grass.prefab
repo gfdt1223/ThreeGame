@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 5966943165580952775}
   - component: {fileID: 8378114444448310182}
   - component: {fileID: 1169279307885092969}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Grass
   m_TagString: grass
   m_Icon: {fileID: 0}
@@ -73,13 +73,13 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: c6723a0cab3863e4da253dc5168325ed, type: 3}
+  m_SortingOrder: 1
+  m_Sprite: {fileID: -207985689, guid: 79bcb735fccd0794fa134bed7a13f7cb, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 0.16, y: 0.16}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1

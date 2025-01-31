@@ -20,7 +20,7 @@ public class EatPlant : MonoBehaviour
     public string[] EatTag;
     void Start()
     {
-        Array.Resize(ref Plant, 200);
+        Array.Resize(ref Plant, 600);
     }
 
     // Update is called once per frame

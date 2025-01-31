@@ -14,7 +14,9 @@ GameObject:
   - component: {fileID: 593817713105077518}
   - component: {fileID: 7090644247102934970}
   - component: {fileID: 7727172340420228877}
-  m_Layer: 0
+  - component: {fileID: 5354380045490626272}
+  - component: {fileID: 1634983360512898065}
+  m_Layer: 6
   m_Name: Sheep
   m_TagString: sheep
   m_Icon: {fileID: 0}
@@ -30,8 +32,8 @@ Transform:
   m_GameObject: {fileID: 4386976644211860510}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.1521, y: -4.2419, z: 0}
-  m_LocalScale: {x: 0.412, y: 0.3895, z: 1}
+  m_LocalPosition: {x: -0.7834, y: -3.8847, z: 0}
+  m_LocalScale: {x: 0.59637, y: 0.5681247, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -77,7 +79,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 2
-  m_Sprite: {fileID: 21300000, guid: e20726cba782a0b4b81e5c04132015a4, type: 3}
+  m_Sprite: {fileID: 2106364973, guid: fa8cb33f7832ad84784530bb3704bb71, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -104,12 +106,12 @@ MonoBehaviour:
   CurrentEnergy: 0
   EnergyCost: 1
   Age: 0
-  OldAge: 8
+  OldAge: 4
   MultiplyAge: 1
   Speed: 1
   isCanMultiply: 0
   BirthAmount: 2
-  BirthCold: 120
+  BirthCold: 60
   BirthColdTimer: 0
   MultiplyCost: 60
   MultiplyRandom: 0
@@ -193,3 +195,65 @@ MonoBehaviour:
   Angle: {x: 0, y: 0, z: 0}
   Position: {x: 0, y: 0, z: 0}
   MinObject: {fileID: 0}
+--- !u!58 &5354380045490626272
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4386976644211860510}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 64
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  serializedVersion: 2
+  m_Radius: 1
+--- !u!50 &1634983360512898065
+Rigidbody2D:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4386976644211860510}
+  m_BodyType: 0
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDrag: 0
+  m_AngularDrag: 0.05
+  m_GravityScale: 0
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 64
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 1
+  m_Constraints: 0

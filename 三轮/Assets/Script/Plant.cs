@@ -24,6 +24,10 @@ public class Plant : MonoBehaviour
     void Update()
     {
         AllPlant = GameObject.FindGameObjectsWithTag(tag);
+        if(transform.position.x<-15||transform.position.x>15||transform.position.y<-8.6f||transform.position.y>8.6f)
+        {
+            Destroy(gameObject);
+        }
         if (CurrentEnergy < MaxAmount)//获得能量
         {
             CurrentEnergy += Time.deltaTime * 0.1f;
@@ -34,7 +38,7 @@ public class Plant : MonoBehaviour
         }       
         GrowColdTimer-=Time.deltaTime;    
         FindPlant();
-        if(GrowColdTimer < 0 &&PlantAmount<=MaxAmount&&AllPlantAmount<=100)//蔓延
+        if(GrowColdTimer < 0 &&PlantAmount<=MaxAmount&&AllPlantAmount<=300)//蔓延
         {
             float x = transform.position.x + Random.Range(-3.0f,3.0f);
             float y = transform.position.y + Random.Range(-3.0f, 3.0f);

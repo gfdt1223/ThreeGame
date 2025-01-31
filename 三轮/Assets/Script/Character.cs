@@ -49,7 +49,7 @@ public class Character : MonoBehaviour
         }
         Age = 0;
         BabyAmount = 0;
-        CurrentEnergy = MaxEnergy;
+        CurrentEnergy =MultiplyCost*2;
         BirthColdTimer = BirthCold;
         Stage = 0;
     }
