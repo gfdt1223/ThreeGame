@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 7489084571651580042}
   - component: {fileID: 3499068639920230882}
   - component: {fileID: 277982983509394806}
+  - component: {fileID: -6604779883923422437}
   m_Layer: 6
   m_Name: Ox
   m_TagString: ox
@@ -117,6 +118,9 @@ MonoBehaviour:
   MultiplyRandom: 0
   SameAnimal: []
   MultiplyTarget: {fileID: 0}
+  CloestTarget: {fileID: 0}
+  CloestTargetDistance: 0
+  CloestTargetAngle: {x: 0, y: 0, z: 0}
   BabyAmount: 0
   TargetDistance: 0
   TargetAngle: {x: 0, y: 0, z: 0}
@@ -126,7 +130,6 @@ MonoBehaviour:
   Stage: 0
   isdecide: 0
   LookDistance: 5
-  Together: {fileID: 2279502745243675497}
   isCanBeEat: 0
 --- !u!114 &2279502745243675497
 MonoBehaviour:
@@ -250,3 +253,17 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 1
   m_Constraints: 0
+--- !u!114 &-6604779883923422437
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2214227694171102064}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e0622f768eb52474592df9340271565d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mindistance: 10
+  isNeedIndepend: 0

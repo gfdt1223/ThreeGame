@@ -13,9 +13,9 @@ GameObject:
   - component: {fileID: 4100226147307447434}
   - component: {fileID: 593817713105077518}
   - component: {fileID: 7090644247102934970}
-  - component: {fileID: 7727172340420228877}
   - component: {fileID: 5354380045490626272}
   - component: {fileID: 1634983360512898065}
+  - component: {fileID: 5229958446654490190}
   m_Layer: 6
   m_Name: Sheep
   m_TagString: sheep
@@ -117,6 +117,9 @@ MonoBehaviour:
   MultiplyRandom: 0
   SameAnimal: []
   MultiplyTarget: {fileID: 0}
+  CloestTarget: {fileID: 0}
+  CloestTargetDistance: 0
+  CloestTargetAngle: {x: 0, y: 0, z: 0}
   BabyAmount: 0
   TargetDistance: 0
   TargetAngle: {x: 0, y: 0, z: 0}
@@ -126,7 +129,6 @@ MonoBehaviour:
   Stage: 0
   isdecide: 0
   LookDistance: 5
-  Together: {fileID: 7727172340420228877}
   isCanBeEat: 0
 --- !u!114 &593817713105077518
 MonoBehaviour:
@@ -172,29 +174,6 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &7727172340420228877
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4386976644211860510}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 971a829455e2d84458a1620e441a2441, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  character: {fileID: 4100226147307447434}
-  Center: {x: 0, y: 0, z: 0}
-  Sum: {x: 0, y: 0, z: 0}
-  Amount: 0
-  MaxDistance: 8
-  Distance: 0
-  angle: {x: 0, y: 0, z: 0}
-  isNeedBack: 0
-  Angle: {x: 0, y: 0, z: 0}
-  Position: {x: 0, y: 0, z: 0}
-  MinObject: {fileID: 0}
 --- !u!58 &5354380045490626272
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -257,3 +236,26 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 1
   m_Constraints: 0
+--- !u!114 &5229958446654490190
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4386976644211860510}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 971a829455e2d84458a1620e441a2441, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  character: {fileID: 4100226147307447434}
+  Center: {x: 0, y: 0, z: 0}
+  Sum: {x: 0, y: 0, z: 0}
+  Amount: 0
+  MaxDistance: 8
+  Distance: 0
+  angle: {x: 0, y: 0, z: 0}
+  isNeedBack: 0
+  Angle: {x: 0, y: 0, z: 0}
+  Position: {x: 0, y: 0, z: 0}
+  MinObject: {fileID: 0}

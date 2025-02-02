@@ -21,9 +21,12 @@ public class Character : MonoBehaviour
     public float MultiplyRandom;//繁殖随机数
     public GameObject[] SameAnimal;//所有同类生物
     public GameObject MultiplyTarget;//交配对象
+    public GameObject CloestTarget;//最近同类
+    public float CloestTargetDistance;//最近同类距离
+    public Vector3 CloestTargetAngle;//最近同类角度
     public int BabyAmount;//附近幼崽数量
-    public float TargetDistance;//最近对象距离
-    public Vector3 TargetAngle;//最近对象角度
+    public float TargetDistance;//最近交配对象距离
+    public Vector3 TargetAngle;//最近交配对象角度
     public GameObject Father;//父对象
     public GameObject Mother;//母对象
     public float mindistance;
@@ -35,8 +38,9 @@ public class Character : MonoBehaviour
     float ScaleX;
     float ScaleY;
     public float LookDistance;//侦察距离
-    public Together Together;
     public bool isCanBeEat;//是否处于可以被捕食状态
+    public Vector3 CurrentPosition;
+    public Vector3 PositionAdd;
     void Start()
     {
         isCanBeEat = true;
@@ -52,11 +56,15 @@ public class Character : MonoBehaviour
         CurrentEnergy =MultiplyCost*2;
         BirthColdTimer = BirthCold;
         Stage = 0;
+        isdecide = false;
+        CurrentPosition=transform.position;
     }
 
     // Update is called once per frame
     void Update()
     {
+        PositionAdd = transform.position-CurrentPosition;
+        CurrentPosition = transform.position;
         if(MultiplyTarget == null&&Stage==2)
         {
             Stage = 0;
@@ -65,10 +73,10 @@ public class Character : MonoBehaviour
         {
             BirthAmount = 1;
         }
-        if (TargetDistance < 1 && Stage != 2&&Stage!=-1)
-        {
-            transform.position-=Speed*TargetAngle*Time.deltaTime;
-        }
+        //if (TargetDistance < 1 && Stage != 2&&Stage!=-1)
+        //{
+        //    transform.position-=Speed*TargetAngle*Time.deltaTime;
+        //}
         ScaleX =transform.localScale.x;
         ScaleY=transform.localScale.y;
         if (Stage != -1)
@@ -120,11 +128,11 @@ public class Character : MonoBehaviour
             {
                 StopCoroutine("Walk");
             }
-            if (!IfAdd(transform.position.x) && ScaleX > 0)//向左走动画
+            if (PositionAdd.x<0 && ScaleX < 0)//向左走动画
             {
                 transform.localScale = new Vector3(-ScaleX, ScaleY, 0);
             }
-            if (IfAdd(transform.position.x) && ScaleX < 0)//向右走动画
+            if (PositionAdd.x >= 0 && ScaleX > 0)//向右走动画
             {
                 transform.localScale = new Vector3(-ScaleX, ScaleY, 0);
             }
@@ -153,18 +161,26 @@ public class Character : MonoBehaviour
         BabyAmount = 0;
         Stage = 0;
     }
-    public void FindClosestTarget()//寻找最近同类
+    public void FindClosestTarget()
     {
         MultiplyTarget = null;
+        CloestTarget = null;
         TargetDistance = float.MaxValue;
+        CloestTargetDistance = float.MaxValue;
         foreach (GameObject target in SameAnimal)
         {
             float distance=Vector3.Distance(transform.position,target.transform.position);
-            if (distance < TargetDistance&&target.GetComponent<Character>().isCanMultiply&&target!=this.gameObject)
+            if (distance < TargetDistance&&target.GetComponent<Character>().isCanMultiply&&target!=this.gameObject)//寻找最近可繁殖同类
             {
                 TargetDistance=distance;
                 TargetAngle =new Vector3(target.transform.position.x-transform.position.x, target.transform.position.y - transform.position.y,0).normalized;
                 MultiplyTarget=target;
+            }
+            if (distance < CloestTargetDistance && target != this.gameObject)//寻找最近同类
+            {
+                CloestTargetDistance = distance;
+                CloestTargetAngle = new Vector3(target.transform.position.x - transform.position.x, target.transform.position.y - transform.position.y, 0).normalized;
+                CloestTarget = target;
             }
         }        
     }
@@ -241,21 +257,33 @@ public class Character : MonoBehaviour
              y = Random.Range(-1f, 1f);
             angle = new Vector3(x, y, 0);
             isdecide = true;
-            if (Together != null)
+            if (this.gameObject.GetComponent<Independent>())
             {
-                if (Together.isNeedBack)
+                Debug.Log("777");
+                if (this.gameObject.GetComponent<Independent>().isNeedIndepend)
                 {
-                    angle = Together.angle;
+                    angle = -CloestTargetAngle;
                 }
                 else
                 {
                     angle = new Vector3(x, y, 0);
                 }
             }
+            if (this.gameObject.GetComponent<Together>())
+            {
+                if (this.gameObject.GetComponent<Together>().isNeedBack)
+                {
+                    angle = this.GetComponent<Together>().angle;
+                }
+                else
+                {
+                    angle = new Vector3(x, y, 0);
+                }
+            }            
         }                  
         
         if (walktimer > 0)
-        {
+        {           
             transform.position += Speed * angle.normalized * Time.deltaTime;
         }
         else

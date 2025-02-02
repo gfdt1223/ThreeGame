@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &2339874777457029776
+--- !u!1 &2944276036050776152
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,42 +8,42 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 3039949512733762221}
-  - component: {fileID: 6790345764998935130}
-  - component: {fileID: 3657933765121949919}
-  - component: {fileID: 5023914092915845616}
-  - component: {fileID: -5828055045507949664}
-  - component: {fileID: 2618044785464326455}
-  - component: {fileID: 9209593321831921468}
+  - component: {fileID: 3710170095540145807}
+  - component: {fileID: 2430975602340932017}
+  - component: {fileID: 7596242899244760063}
+  - component: {fileID: 5806003914673277902}
+  - component: {fileID: 7298920149471502568}
+  - component: {fileID: 4393642979612852839}
+  - component: {fileID: -8983067494844803522}
   m_Layer: 6
-  m_Name: Wolf
-  m_TagString: wolf
+  m_Name: Beer
+  m_TagString: beer
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &3039949512733762221
+--- !u!4 &3710170095540145807
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2339874777457029776}
+  m_GameObject: {fileID: 2944276036050776152}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.6127, y: 1.283, z: 0}
-  m_LocalScale: {x: 0.8388984, y: 0.8800829, z: 1}
+  m_LocalPosition: {x: -5.45, y: 0.86, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!212 &6790345764998935130
+--- !u!212 &2430975602340932017
 SpriteRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2339874777457029776}
+  m_GameObject: {fileID: 2944276036050776152}
   m_Enabled: 1
   m_CastShadows: 0
   m_ReceiveShadows: 0
@@ -78,7 +78,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 2
-  m_Sprite: {fileID: -6496364110801500784, guid: a3270ae33199ee04f94b766b92403f2f, type: 3}
+  m_Sprite: {fileID: -2413806693520163455, guid: a86470a33a6bf42c4b3595704624658b, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -89,33 +89,36 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &3657933765121949919
+--- !u!114 &7596242899244760063
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2339874777457029776}
+  m_GameObject: {fileID: 2944276036050776152}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4b9ad24093711634d86e7d97b4f0236c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MaxEnergy: 150
+  MaxEnergy: 300
   CurrentEnergy: 0
-  EnergyCost: 1.2
+  EnergyCost: 1.3
   Age: 0
-  OldAge: 4
+  OldAge: 8
   MultiplyAge: 1
-  Speed: 1.2
+  Speed: 0.8
   isCanMultiply: 0
   BirthAmount: 1
-  BirthCold: 60
+  BirthCold: 120
   BirthColdTimer: 0
-  MultiplyCost: 50
+  MultiplyCost: 100
   MultiplyRandom: 0
   SameAnimal: []
   MultiplyTarget: {fileID: 0}
+  CloestTarget: {fileID: 0}
+  CloestTargetDistance: 0
+  CloestTargetAngle: {x: 0, y: 0, z: 0}
   BabyAmount: 0
   TargetDistance: 0
   TargetAngle: {x: 0, y: 0, z: 0}
@@ -125,21 +128,20 @@ MonoBehaviour:
   Stage: 0
   isdecide: 0
   LookDistance: 20
-  Together: {fileID: -5828055045507949664}
   isCanBeEat: 0
---- !u!114 &5023914092915845616
+--- !u!114 &5806003914673277902
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2339874777457029776}
+  m_GameObject: {fileID: 2944276036050776152}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 760b0fa2d1fe49d4b9168a426d61e655, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  character: {fileID: 3657933765121949919}
+  character: {fileID: 7596242899244760063}
   AnimalCanBeEat: []
   EatTarget: {fileID: 0}
   EatCold: 1
@@ -149,36 +151,40 @@ MonoBehaviour:
   EatTag:
   - sheep
   - ox
---- !u!114 &-5828055045507949664
-MonoBehaviour:
+--- !u!50 &7298920149471502568
+Rigidbody2D:
+  serializedVersion: 4
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2339874777457029776}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 971a829455e2d84458a1620e441a2441, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  character: {fileID: 3657933765121949919}
-  Center: {x: 0, y: 0, z: 0}
-  Sum: {x: 0, y: 0, z: 0}
-  Amount: 0
-  MaxDistance: 6
-  Distance: 0
-  angle: {x: 0, y: 0, z: 0}
-  isNeedBack: 0
-  Angle: {x: 0, y: 0, z: 0}
-  Position: {x: 0, y: 0, z: 0}
-  MinObject: {fileID: 0}
---- !u!58 &2618044785464326455
+  m_GameObject: {fileID: 2944276036050776152}
+  m_BodyType: 0
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDrag: 0
+  m_AngularDrag: 0.05
+  m_GravityScale: 0
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 64
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 1
+  m_Constraints: 0
+--- !u!58 &4393642979612852839
 CircleCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2339874777457029776}
+  m_GameObject: {fileID: 2944276036050776152}
   m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
@@ -204,33 +210,20 @@ CircleCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 2}
+  m_Offset: {x: 0, y: 0}
   serializedVersion: 2
   m_Radius: 0.5
---- !u!50 &9209593321831921468
-Rigidbody2D:
-  serializedVersion: 4
+--- !u!114 &-8983067494844803522
+MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2339874777457029776}
-  m_BodyType: 0
-  m_Simulated: 1
-  m_UseFullKinematicContacts: 0
-  m_UseAutoMass: 0
-  m_Mass: 1
-  m_LinearDrag: 0
-  m_AngularDrag: 0.05
-  m_GravityScale: 0
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 64
-  m_Interpolate: 0
-  m_SleepingMode: 1
-  m_CollisionDetection: 1
-  m_Constraints: 0
+  m_GameObject: {fileID: 2944276036050776152}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e0622f768eb52474592df9340271565d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mindistance: 10
+  isNeedIndepend: 0
