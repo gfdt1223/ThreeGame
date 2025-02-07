@@ -1,11 +1,16 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using static UnityEngine.GraphicsBuffer;
 
 public class Character : MonoBehaviour
 {
     // Start is called before the first frame update
+    public float prebMaxEnergy;
+    public float prebSpeed;
+    public float prebBirthCold;
     public float MaxEnergy;//最大能量
     public float CurrentEnergy;//现有能量
     public float EnergyCost;//能量消耗
@@ -16,14 +21,18 @@ public class Character : MonoBehaviour
     public bool isCanMultiply;//是否可以繁殖
     public int BirthAmount;//繁殖后代数量
     public float BirthCold;//繁殖冷却时间
+    public float BirthDuringTime;//繁殖过渡时间
     public float BirthColdTimer;//繁殖冷却计时器
     public float MultiplyCost;//繁殖消耗能量   
+    public float GenesChangeRandom;//基因突变概率
     public float MultiplyRandom;//繁殖随机数
     public GameObject[] SameAnimal;//所有同类生物
     public GameObject MultiplyTarget;//交配对象
     public GameObject CloestTarget;//最近同类
     public float CloestTargetDistance;//最近同类距离
     public Vector3 CloestTargetAngle;//最近同类角度
+    public GameObject[] Babys;//幼崽
+    public int MultiplyAmount;//繁殖次数
     public int BabyAmount;//附近幼崽数量
     public float TargetDistance;//最近交配对象距离
     public Vector3 TargetAngle;//最近交配对象角度
@@ -41,15 +50,28 @@ public class Character : MonoBehaviour
     public bool isCanBeEat;//是否处于可以被捕食状态
     public Vector3 CurrentPosition;
     public Vector3 PositionAdd;
+    public bool[] Genes;//基因库
     void Start()
     {
+        BirthDuringTime = 0;
         isCanBeEat = true;
         TargetDistance = float.MaxValue;
         SameAnimal = GameObject.FindGameObjectsWithTag(tag);//寻找所有同类
-        FindParents();
+        //FindParents();
         if (Father != null && Mother != null)
         {
             Variation();
+        }
+        MaxEnergy=prebMaxEnergy;
+        Speed = prebSpeed;
+        BirthCold = prebBirthCold;
+        RandomGenes();
+        for (int i = 0; i < Genes.Length; i++)//遍历基因并执行
+        {
+            if (Genes[i])
+            {
+                WorkGenes(i);
+            }
         }
         Age = 0;
         BabyAmount = 0;
@@ -58,11 +80,15 @@ public class Character : MonoBehaviour
         Stage = 0;
         isdecide = false;
         CurrentPosition=transform.position;
+        MultiplyAmount = 0;
+        Array.Resize(ref Babys, 50);
+        isCanMultiply = false;
     }
 
     // Update is called once per frame
     void Update()
     {
+        BirthDuringTime-= Time.deltaTime;
         PositionAdd = transform.position-CurrentPosition;
         CurrentPosition = transform.position;
         if(MultiplyTarget == null&&Stage==2)
@@ -146,24 +172,32 @@ public class Character : MonoBehaviour
     }
     public void Multiply()//繁殖
     {
-        MultiplyRandom = Random.Range(-1.0f, 1.0f);
-        FindBaby();
+        BabyAmount = 0;
+        MultiplyRandom = UnityEngine.Random.Range(-1.0f, 1.0f);
+        //FindBaby();
         if (MultiplyRandom >= MultiplyTarget.GetComponent<Character>().MultiplyRandom)
         {
-            while (BabyAmount < BirthAmount)
+            while(BabyAmount < BirthAmount) 
             {
-                Instantiate(MultiplyTarget);
-                BabyAmount++;                
+                Babys[BabyAmount + MultiplyAmount * BirthAmount]= Instantiate(MultiplyTarget);
+                Babys[BabyAmount + MultiplyAmount * BirthAmount].GetComponent<Character>().Mother = this.gameObject;
+                Babys[BabyAmount + MultiplyAmount * BirthAmount].GetComponent<Character>().Father = MultiplyTarget;
+                BabyAmount++;          
             }
         }
           CurrentEnergy -= MultiplyCost;
           BirthColdTimer=BirthCold;
         BabyAmount = 0;
         Stage = 0;
+        MultiplyAmount++;
+        BirthDuringTime = 3;
     }
     public void FindClosestTarget()
     {
-        MultiplyTarget = null;
+        if (BirthDuringTime < 0)
+        {
+            MultiplyTarget = null;
+        }
         CloestTarget = null;
         TargetDistance = float.MaxValue;
         CloestTargetDistance = float.MaxValue;
@@ -216,50 +250,72 @@ public class Character : MonoBehaviour
             }
         }
     }
-    public void FindParents()//寻找父母
-    {
-        mindistance = float.MaxValue;
-        foreach (GameObject father in SameAnimal)
-        {                    
-            float distance=Vector3.Distance(transform.position,father.transform.position);           
-                if (distance < mindistance && father != this.gameObject)
-                {
-                    Father = father;
-                    mindistance = distance;
-                }           
-        }
-       foreach(GameObject mother in SameAnimal)
-        {
-            float secondmindistance = float.MaxValue;
-            float distance = Vector3.Distance(transform.position, mother.transform.position);
-            if (distance > mindistance &&distance< secondmindistance&&mother != this.gameObject)
-            { 
-                Mother = mother;
-                secondmindistance = distance;
-            }
-        }
-    }
+    //public void FindParents()//寻找父母
+    //{
+    //    mindistance = float.MaxValue;
+    //    foreach (GameObject father in SameAnimal)
+    //    {                    
+    //        float distance=Vector3.Distance(transform.position,father.transform.position);           
+    //            if (distance < mindistance && father != this.gameObject)
+    //            {
+    //                Father = father;
+    //                mindistance = distance;
+    //            }           
+    //    }
+    //   foreach(GameObject mother in SameAnimal)
+    //    {
+    //        float secondmindistance = float.MaxValue;
+    //        float distance = Vector3.Distance(transform.position, mother.transform.position);
+    //        if (distance > mindistance &&distance< secondmindistance&&mother != this.gameObject)
+    //        { 
+    //            Mother = mother;
+    //            secondmindistance = distance;
+    //        }
+    //    }
+    //}
     public void Variation()//继承变异
     {
-        float RandomNumber = Random.Range(-1.0f, 1.0f);
-        MaxEnergy = (Father.GetComponent<Character>().MaxEnergy + Mother.GetComponent<Character>().MaxEnergy+RandomNumber*10) * Random.Range(0.4f, 0.6f);
-        Speed = (Father.GetComponent<Character>().Speed + Mother.GetComponent<Character>().Speed+ RandomNumber*0.2f) * Random.Range(0.4f, 0.6f);
-        BirthAmount = (int)((Father.GetComponent<Character>().BirthAmount + Mother.GetComponent<Character>().BirthAmount+ RandomNumber) *Random.Range(0.4f, 0.6f));
-        BirthCold = (Father.GetComponent<Character>().BirthCold + Mother.GetComponent<Character>().BirthCold+ RandomNumber*10) * Random.Range(0.4f, 0.6f);
+        float RandomNumber = UnityEngine.Random.Range(-1.0f, 1.0f);
+        prebMaxEnergy = (Father.GetComponent<Character>().prebMaxEnergy + Mother.GetComponent<Character>().prebMaxEnergy+RandomNumber*10) * UnityEngine.Random.Range(0.4f, 0.6f);
+        prebSpeed = (Father.GetComponent<Character>().prebSpeed + Mother.GetComponent<Character>().prebSpeed + RandomNumber*0.2f) * UnityEngine.Random.Range(0.4f, 0.6f);
+        prebBirthCold = (Father.GetComponent<Character>().prebBirthCold + Mother.GetComponent<Character>().prebBirthCold + RandomNumber * 10) * UnityEngine.Random.Range(0.4f, 0.6f);
+        for (int i = 0; i < Genes.Length; i++)
+        {
+            if (Father.GetComponent<Character>().Genes[i] && Mother.GetComponent<Character>().Genes[i])
+            {
+                Genes[i] = true;
+            }
+            else if (Father.GetComponent<Character>().Genes[i] || Mother.GetComponent<Character>().Genes[i])
+            {
+                float random = UnityEngine.Random.Range(-1.0f, 1.0f);
+                if (random > 0)
+                {
+                    Genes[i] = true;
+                }
+                else
+                {
+                    Genes[i] = false;
+                }
+            }
+            else
+            {
+                Genes[i] = false;
+            }
+        }
     }
      IEnumerator Walk()
     {
         Vector3 angle=new Vector3(0,0,0);
         if (!isdecide)
         {
-             walktimer = Random.Range(1.0f, 5.0f);
-             x = Random.Range(-1f, 1f);
-             y = Random.Range(-1f, 1f);
+             walktimer = UnityEngine.Random.Range(1.0f, 5.0f);
+             x = UnityEngine.Random.Range(-1f, 1f);
+             y = UnityEngine.Random.Range(-1f, 1f);
             angle = new Vector3(x, y, 0);
             isdecide = true;
             if (this.gameObject.GetComponent<Independent>())
             {
-                Debug.Log("777");
+                //Debug.Log("777");
                 if (this.gameObject.GetComponent<Independent>().isNeedIndepend)
                 {
                     angle = -CloestTargetAngle;
@@ -308,6 +364,65 @@ public class Character : MonoBehaviour
             lasta = a;
             lasttime = Time.time;
             return false;
+        }
+        
+    }
+    public void RandomGenes()//基因突变
+    {
+        for (int i = 0; i < Genes.Length; i++) {
+            float random = UnityEngine.Random.Range(0, 1.0f);
+            if (random <= GenesChangeRandom)
+            {
+                if (Genes[i])
+                {
+                    Genes[i] = false;
+                }
+                else
+                {
+                    Genes[i]= true;
+                }
+            }
+        }
+    }
+    public void WorkGenes(int i)//执行基因
+    {
+        switch(i)
+        {
+            case 0://疯狂繁殖：繁殖速度翻倍，繁殖消耗减少，寿命减半
+                MultiplyAge = MultiplyAge * 0.5f;
+                MultiplyCost = MultiplyCost * 0.5f;
+                BirthCold = BirthCold * 0.5f;
+                OldAge = OldAge * 0.5f;
+                break;
+            case 1://吃货：最大能量翻倍，速度减少，能量消耗加快
+                MaxEnergy = MaxEnergy * 2;
+                Speed = Speed * 0.66f;
+                EnergyCost = EnergyCost * 1.2f;
+                break;
+            case 2://安于现状：侦察范围减半，寿命增加
+                LookDistance = LookDistance * 0.5f;
+                OldAge = OldAge * 1.5f;
+                break;
+            case 3://懒惰：能量消耗减少，繁殖冷却延长
+                EnergyCost = EnergyCost * 0.5f;
+                BirthCold = BirthCold * 2;
+                break;
+            case 4://精力充沛：能量消耗加快，其他属性上升
+                EnergyCost = EnergyCost * 1.5f;
+                MaxEnergy = MaxEnergy * 1.3f;
+                Speed = Speed * 1.3f;
+                LookDistance = LookDistance * 1.3f;
+                OldAge = OldAge * 1.3f;
+                BirthCold = BirthCold * 0.66f;
+                break;
+            case 5://差生：所有属性下降
+                MaxEnergy = MaxEnergy * 0.66f;
+                Speed = Speed * 0.66f;
+                LookDistance = LookDistance * 0.66f;
+                OldAge = OldAge * 0.66f;
+                BirthCold = BirthCold * 1.3f;
+                break;
+
         }
         
     }
