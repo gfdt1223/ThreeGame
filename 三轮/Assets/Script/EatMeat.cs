@@ -14,6 +14,7 @@ public class EatMeat : MonoBehaviour
     public float EatColdTimer;//获取能量冷却计时器
     public float mindistance;//最小距离
     public float DefendRandom;//抵抗随机数
+    public float FoodTakein;//消化速率
     public string[] EatTag;
     
     void Start()
@@ -74,7 +75,7 @@ public class EatMeat : MonoBehaviour
                     {
                         if (!EatTarget.GetComponent<Defend>().isdefend)//是否可以抵抗
                         {
-                            character.CurrentEnergy += 0.5f * EatTarget.GetComponent<Character>().CurrentEnergy;
+                            character.CurrentEnergy += FoodTakein * EatTarget.GetComponent<Character>().CurrentEnergy;
                             Destroy(EatTarget);
                         }
                         else

@@ -31,8 +31,8 @@ Transform:
   m_GameObject: {fileID: 2339874777457029776}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.6127, y: 1.283, z: 0}
-  m_LocalScale: {x: 0.8388984, y: 0.8800829, z: 1}
+  m_LocalPosition: {x: 2.0187, y: 0.5282, z: 0}
+  m_LocalScale: {x: 1.4293965, y: 1.4838896, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -101,6 +101,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4b9ad24093711634d86e7d97b4f0236c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Self: {fileID: 2339874777457029776}
   prebMaxEnergy: 150
   prebSpeed: 1.2
   prebBirthCold: 80
@@ -117,7 +118,7 @@ MonoBehaviour:
   BirthDuringTime: 0
   BirthColdTimer: 0
   MultiplyCost: 50
-  GenesChangeRandom: 0.1
+  GenesChangeRandom: 0.05
   MultiplyRandom: 0
   SameAnimal: []
   MultiplyTarget: {fileID: 0}
@@ -138,7 +139,8 @@ MonoBehaviour:
   isCanBeEat: 0
   CurrentPosition: {x: 0, y: 0, z: 0}
   PositionAdd: {x: 0, y: 0, z: 0}
-  Genes: 000000000000
+  Genes: 0000000000000000000000
+  DangerousAnimal: []
 --- !u!114 &5023914092915845616
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -158,6 +160,7 @@ MonoBehaviour:
   EatColdTimer: 0
   mindistance: 0
   DefendRandom: 0
+  FoodTakein: 0.5
   EatTag:
   - sheep
   - ox
@@ -216,7 +219,7 @@ CircleCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 2}
+  m_Offset: {x: 0, y: 1.6}
   serializedVersion: 2
   m_Radius: 0.5
 --- !u!50 &9209593321831921468

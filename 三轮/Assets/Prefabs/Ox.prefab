@@ -103,6 +103,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4b9ad24093711634d86e7d97b4f0236c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Self: {fileID: 2214227694171102064}
   prebMaxEnergy: 300
   prebSpeed: 0.8
   prebBirthCold: 80
@@ -119,7 +120,7 @@ MonoBehaviour:
   BirthDuringTime: 0
   BirthColdTimer: 0
   MultiplyCost: 80
-  GenesChangeRandom: 0.1
+  GenesChangeRandom: 0.05
   MultiplyRandom: 0
   SameAnimal: []
   MultiplyTarget: {fileID: 0}
@@ -140,7 +141,8 @@ MonoBehaviour:
   isCanBeEat: 0
   CurrentPosition: {x: 0, y: 0, z: 0}
   PositionAdd: {x: 0, y: 0, z: 0}
-  Genes: 000000000000
+  Genes: 0000000000000000000000
+  DangerousAnimal: []
 --- !u!114 &2279502745243675497
 MonoBehaviour:
   m_ObjectHideFlags: 0

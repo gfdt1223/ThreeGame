@@ -101,6 +101,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4b9ad24093711634d86e7d97b4f0236c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Self: {fileID: 2944276036050776152}
   prebMaxEnergy: 300
   prebSpeed: 0.8
   prebBirthCold: 120
@@ -117,7 +118,7 @@ MonoBehaviour:
   BirthDuringTime: 0
   BirthColdTimer: 0
   MultiplyCost: 100
-  GenesChangeRandom: 0.1
+  GenesChangeRandom: 0.05
   MultiplyRandom: 0
   SameAnimal: []
   MultiplyTarget: {fileID: 0}
@@ -138,7 +139,8 @@ MonoBehaviour:
   isCanBeEat: 0
   CurrentPosition: {x: 0, y: 0, z: 0}
   PositionAdd: {x: 0, y: 0, z: 0}
-  Genes: 000000000000
+  Genes: 0000000000000000000000
+  DangerousAnimal: []
 --- !u!114 &5806003914673277902
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -158,6 +160,7 @@ MonoBehaviour:
   EatColdTimer: 0
   mindistance: 0
   DefendRandom: 0
+  FoodTakein: 0.5
   EatTag:
   - sheep
   - ox

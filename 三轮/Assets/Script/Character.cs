@@ -8,6 +8,7 @@ using static UnityEngine.GraphicsBuffer;
 public class Character : MonoBehaviour
 {
     // Start is called before the first frame update
+    public GameObject Self;
     public float prebMaxEnergy;
     public float prebSpeed;
     public float prebBirthCold;
@@ -51,8 +52,10 @@ public class Character : MonoBehaviour
     public Vector3 CurrentPosition;
     public Vector3 PositionAdd;
     public bool[] Genes;//基因库
+    public GameObject[] DangerousAnimal;
     void Start()
     {
+        Array.Resize(ref DangerousAnimal, 100);      
         BirthDuringTime = 0;
         isCanBeEat = true;
         TargetDistance = float.MaxValue;
@@ -91,7 +94,16 @@ public class Character : MonoBehaviour
         BirthDuringTime-= Time.deltaTime;
         PositionAdd = transform.position-CurrentPosition;
         CurrentPosition = transform.position;
-        if(MultiplyTarget == null&&Stage==2)
+        if (this.gameObject.GetComponent<EatPlant>() != null)
+        {
+            EatMeat[] EatMeatObjects = FindObjectsOfType<EatMeat>();
+            DangerousAnimal = new GameObject[EatMeatObjects.Length];
+            for (int i = 0; i < EatMeatObjects.Length; i++)
+            {
+                DangerousAnimal[i] = EatMeatObjects[i].gameObject;
+            }
+        }
+        if (MultiplyTarget == null&&Stage==2)
         {
             Stage = 0;
         }
@@ -123,8 +135,11 @@ public class Character : MonoBehaviour
             {
                 isCanMultiply = false;
             }
-            FindClosestTarget();
-            if (isCanMultiply && MultiplyTarget != null)//开始繁殖
+            if (MultiplyTarget != this.gameObject)
+            {
+                FindClosestTarget();
+            }
+            if (isCanMultiply && MultiplyTarget != null&&MultiplyTarget!=this.gameObject)//开始繁殖
             {
                 Stage = 2;
                 if (TargetDistance > 1)//靠近
@@ -179,7 +194,7 @@ public class Character : MonoBehaviour
         {
             while(BabyAmount < BirthAmount) 
             {
-                Babys[BabyAmount + MultiplyAmount * BirthAmount]= Instantiate(MultiplyTarget);
+                Babys[BabyAmount + MultiplyAmount * BirthAmount]= Instantiate(Self);
                 Babys[BabyAmount + MultiplyAmount * BirthAmount].GetComponent<Character>().Mother = this.gameObject;
                 Babys[BabyAmount + MultiplyAmount * BirthAmount].GetComponent<Character>().Father = MultiplyTarget;
                 BabyAmount++;          
@@ -191,20 +206,21 @@ public class Character : MonoBehaviour
         Stage = 0;
         MultiplyAmount++;
         BirthDuringTime = 3;
+        isCanMultiply = false;
     }
     public void FindClosestTarget()
     {
-        if (BirthDuringTime < 0)
+        if (BirthDuringTime < 0&&Stage!=2)
         {
             MultiplyTarget = null;
+            TargetDistance = float.MaxValue;
         }
         CloestTarget = null;
-        TargetDistance = float.MaxValue;
         CloestTargetDistance = float.MaxValue;
         foreach (GameObject target in SameAnimal)
         {
             float distance=Vector3.Distance(transform.position,target.transform.position);
-            if (distance < TargetDistance&&target.GetComponent<Character>().isCanMultiply&&target!=this.gameObject)//寻找最近可繁殖同类
+            if (distance < TargetDistance&&(target.GetComponent<Character>().isCanMultiply||Stage==2)&&target!=this.gameObject)//寻找最近可繁殖同类
             {
                 TargetDistance=distance;
                 TargetAngle =new Vector3(target.transform.position.x-transform.position.x, target.transform.position.y - transform.position.y,0).normalized;
@@ -422,8 +438,112 @@ public class Character : MonoBehaviour
                 OldAge = OldAge * 0.66f;
                 BirthCold = BirthCold * 1.3f;
                 break;
-
+            case 6://分食：在能量充足时分给能量最少个体
+                StartCoroutine("Gene6");
+                break;
+            case 7://护子：幼崽遭受攻击时有概率由父母抵挡
+                StartCoroutine("Gene7");
+                break;
+            case 8://合理分配：能量高时繁殖冷却减少，能量消耗加快；能量低时能量消耗减慢
+                StartCoroutine("Gene8");
+                break;
+            case 9://充分消化：吃掉食物获得的能量更多
+                if (this.GetComponent<EatMeat>() != null)
+                {
+                    this.GetComponent<EatMeat>().FoodTakein += 0.2f;
+                }
+                else
+                {
+                    this.GetComponent<EatPlant>().EatAmount *= 2;
+                }
+                break;
+            case 10://克隆：繁殖方式变为自我复制，子代会继承全部基因和属性
+                StartCoroutine("Gene10");
+                break;
         }
         
+    }
+    IEnumerator Gene6()
+    {
+        while (true)
+        {
+            GameObject MinEnergyAnimal = null;
+            float MinEnergy = float.MaxValue;
+            float AnimalMaxEnergy = 0;
+            if (CurrentEnergy >= MaxEnergy * 0.9f)
+            {
+                foreach (GameObject animal in SameAnimal)
+                {
+                    if (animal.GetComponent<Character>().CurrentEnergy < MinEnergy)
+                    {
+                        MinEnergy = animal.GetComponent<Character>().CurrentEnergy;
+                        AnimalMaxEnergy = animal.GetComponent<Character>().MaxEnergy;
+                        MinEnergyAnimal = animal;
+                    }
+                }
+                if (MinEnergy < AnimalMaxEnergy * 0.5f)
+                {
+                    CurrentEnergy -= (CurrentEnergy + MinEnergy) / 2;
+                    MinEnergyAnimal.GetComponent<Character>().CurrentEnergy += (CurrentEnergy + MinEnergy) / 2;
+                }
+            }
+            yield return null;
+        }   
+    }
+    IEnumerator Gene7()
+    {
+        while (true)
+        {
+            foreach (GameObject animal in DangerousAnimal)
+            {
+                if (animal.GetComponent<EatMeat>().EatTarget == this.gameObject)
+                {
+                    float random = UnityEngine.Random.Range(-1.0f, 1.0f);
+                    if (random > 0.0f && (Father != null || Mother != null))
+                    {
+                        if (Mother != null)
+                        {
+                            animal.GetComponent<EatMeat>().EatTarget = Mother;
+                        }
+                        else
+                        {
+                            animal.GetComponent<EatMeat>().EatTarget = Father;
+                        }
+                    }
+                }
+            }
+            yield return null;
+        }
+    }
+    IEnumerator Gene8()
+    {
+        while (true)
+        {
+            if (CurrentEnergy >= MaxEnergy * 0.7f)
+            {
+                BirthColdTimer -= 0.5f * Time.deltaTime;
+                CurrentEnergy -= EnergyCost * Time.deltaTime * 0.2f;
+            }
+            else
+            {
+                CurrentEnergy += EnergyCost * Time.deltaTime * 0.2f;
+            }
+            yield return null;
+        }
+    }
+    IEnumerator Gene10()
+    {
+        while (true)
+        {
+            Debug.Log("888");
+            MultiplyTarget = this.gameObject;
+            if (isCanMultiply)
+            {
+                Stage = 2;
+                Multiply();
+                isCanMultiply = false;
+            }
+            yield return null;
+        }
     }
 }
