@@ -16,7 +16,7 @@ public class EatMeat : MonoBehaviour
     public float DefendRandom;//抵抗随机数
     public float FoodTakein;//消化速率
     public string[] EatTag;
-    
+
     void Start()
     {
         Array.Resize(ref AnimalCanBeEat, 100);
@@ -31,17 +31,20 @@ public class EatMeat : MonoBehaviour
             {
                 if (i == 0)
                 {
-                    GameObject.FindGameObjectsWithTag(EatTag[i]).CopyTo(AnimalCanBeEat, 0);                  
+                    GameObject.FindGameObjectsWithTag(EatTag[i]).CopyTo(AnimalCanBeEat, 0);
                 }
                 else
                 {
-                    GameObject.FindGameObjectsWithTag(EatTag[i]).CopyTo(AnimalCanBeEat, GameObject.FindGameObjectsWithTag(EatTag[i-1]).Length);                
+                    GameObject.FindGameObjectsWithTag(EatTag[i]).CopyTo(AnimalCanBeEat, GameObject.FindGameObjectsWithTag(EatTag[i - 1]).Length);
                 }
 
             }
             EatColdTimer -= Time.deltaTime;
-            FindAnimal();          
-            if (character.MaxEnergy - character.CurrentEnergy > character.MultiplyCost && EatTarget != null)
+            if (character.Stage != 3)
+            {
+                FindAnimal();
+            }
+            if (character.MaxEnergy - character.CurrentEnergy > character.MultiplyCost && EatTarget != null&&character.Stage!=3)
             {
                 character.Stage = 1;
             }
@@ -60,7 +63,7 @@ public class EatMeat : MonoBehaviour
             if (animal != null)
             {
                 float distance = Vector3.Distance(transform.position, animal.transform.position);
-                if (distance < mindistance && distance <= character.LookDistance&&animal.GetComponent<Character>().isCanBeEat)
+                if (distance < mindistance && distance <= character.LookDistance && animal.GetComponent<Character>().isCanBeEat)
                 {
                     mindistance = distance;
                     EatTarget = animal;
@@ -71,28 +74,18 @@ public class EatMeat : MonoBehaviour
                 }
                 if (distance <= 1 && character.Stage == 1)
                 {
-                    if (EatTarget.GetComponent<Defend>() != null)//是否含有抵抗组件
+                    if (character.Speed < EatTarget.GetComponent<Character>().Speed)
                     {
-                        if (!EatTarget.GetComponent<Defend>().isdefend)//是否可以抵抗
+                        float RandomNumber = UnityEngine.Random.Range(-1.0f, 1.0f);
+                        if (RandomNumber < 0)
                         {
-                            character.CurrentEnergy += FoodTakein * EatTarget.GetComponent<Character>().CurrentEnergy;
+                            character.CurrentEnergy += 0.5f * EatTarget.GetComponent<Character>().CurrentEnergy;
                             Destroy(EatTarget);
                         }
                         else
                         {
-                            DefendRandom = UnityEngine.Random.Range(-1.0f, 1.0f);
-                            if (DefendRandom > 0)//抵抗成功
-                            {
-                                EatTarget.GetComponent<Defend>().defendtimer = EatTarget.GetComponent<Defend>().defendtime;
-                                this.GetComponent<Character>().CurrentEnergy -= 30;
-                                this.GetComponent<Character>().CurrentEnergy -= 30;
-                                EatTarget=null;
-                            }
-                            else
-                            {
-                                character.CurrentEnergy += 0.5f * EatTarget.GetComponent<Character>().CurrentEnergy;
-                                Destroy(EatTarget);
-                            }
+                            Debug.Log("1");
+                            character.Stage = 3;
                         }
                     }
                     else
@@ -100,16 +93,21 @@ public class EatMeat : MonoBehaviour
                         character.CurrentEnergy += 0.5f * EatTarget.GetComponent<Character>().CurrentEnergy;
                         Destroy(EatTarget);
                     }
+
                 }
+
+
                 if (distance > 1 && EatTarget != null && character.Stage == 1)//向猎物方向移动
-                {            
-                     transform.position += character.Speed * (EatTarget.transform.position - transform.position).normalized * Time.deltaTime * 0.05f;
-                    character.CurrentEnergy-=Time.deltaTime*character.EnergyCost*0.1f;
+                {
+                    transform.position += character.Speed * (EatTarget.transform.position - transform.position).normalized * Time.deltaTime * 0.05f;
+                    character.CurrentEnergy -= Time.deltaTime * character.EnergyCost * 0.1f;
                 }
+
             }
         }
     }
 }
+
     // IEnumerator RunToAnimal()//追击猎物
     //{
     //    if (mindistance > EatDistance&&EatTarget!=null&&character.Stage==3)//向猎物方向移动

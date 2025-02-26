@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 1513172469807905452}
   - component: {fileID: 4851114523555620421}
   - component: {fileID: 2279502745243675497}
-  - component: {fileID: 3869855399093818182}
   - component: {fileID: 7489084571651580042}
   - component: {fileID: 3499068639920230882}
   - component: {fileID: 277982983509394806}
@@ -166,21 +165,6 @@ MonoBehaviour:
   Angle: {x: 0, y: 0, z: 0}
   Position: {x: 0, y: 0, z: 0}
   MinObject: {fileID: 0}
---- !u!114 &3869855399093818182
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2214227694171102064}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c98f7fcc666783a43a740ec84c917a01, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  isdefend: 0
-  defendtime: 60
-  defendtimer: 0
 --- !u!114 &7489084571651580042
 MonoBehaviour:
   m_ObjectHideFlags: 0

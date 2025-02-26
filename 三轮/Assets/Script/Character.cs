@@ -20,6 +20,7 @@ public class Character : MonoBehaviour
     public float MultiplyAge;//可以繁殖年龄
     public float Speed;//速度
     public bool isCanMultiply;//是否可以繁殖
+    public float RestTime=10;//休息时间
     public int BirthAmount;//繁殖后代数量
     public float BirthCold;//繁殖冷却时间
     public float BirthDuringTime;//繁殖过渡时间
@@ -40,7 +41,7 @@ public class Character : MonoBehaviour
     public GameObject Father;//父对象
     public GameObject Mother;//母对象
     public float mindistance;
-    public int Stage;//状态(-1死亡，0巡逻，1觅食，2繁殖)
+    public int Stage;//状态(-1死亡，0巡逻，1觅食，2繁殖,3休息)
     public bool isdecide;//是否决定巡逻方向
     float walktimer;
     float x;
@@ -111,14 +112,22 @@ public class Character : MonoBehaviour
         {
             BirthAmount = 1;
         }
+        if (Stage == 3)//休息状态
+        {
+            CurrentEnergy += EnergyCost * Time.deltaTime * 0.2f;
+            RestTime-=Time.deltaTime;
+            if (RestTime < 0)
+            {
+                RestTime = 10;
+                Stage = 1;
+            }
+        }
         //if (TargetDistance < 1 && Stage != 2&&Stage!=-1)
         //{
         //    transform.position-=Speed*TargetAngle*Time.deltaTime;
         //}
         ScaleX =transform.localScale.x;
-        ScaleY=transform.localScale.y;
-        if (Stage != -1)
-        {
+        ScaleY=transform.localScale.y;       
             Age += Time.deltaTime * 0.02f;//年龄增长
             BirthColdTimer -= Time.deltaTime;
             CurrentEnergy -= EnergyCost * Time.deltaTime * 0.5f;//能量消耗                       
@@ -177,7 +186,7 @@ public class Character : MonoBehaviour
             {
                 transform.localScale = new Vector3(-ScaleX, ScaleY, 0);
             }
-        }
+        
         if(Stage==-1)
         {
             gameObject.tag = "body";
@@ -457,9 +466,9 @@ public class Character : MonoBehaviour
                     this.GetComponent<EatPlant>().EatAmount *= 2;
                 }
                 break;
-            case 10://克隆：繁殖方式变为自我复制，子代会继承全部基因和属性
-                StartCoroutine("Gene10");
-                break;
+            //case 10://克隆：繁殖方式变为自我复制，子代会继承全部基因和属性
+            //    StartCoroutine("Gene10");
+            //    break;
         }
         
     }
@@ -531,19 +540,19 @@ public class Character : MonoBehaviour
             yield return null;
         }
     }
-    IEnumerator Gene10()
-    {
-        while (true)
-        {
-            Debug.Log("888");
-            MultiplyTarget = this.gameObject;
-            if (isCanMultiply)
-            {
-                Stage = 2;
-                Multiply();
-                isCanMultiply = false;
-            }
-            yield return null;
-        }
-    }
+    //IEnumerator Gene10()
+    //{
+    //    while (true)
+    //    {
+    //        Debug.Log("888");
+    //        MultiplyTarget = this.gameObject;
+    //        if (isCanMultiply)
+    //        {
+    //            Stage = 2;
+    //            Multiply();
+    //            isCanMultiply = false;
+    //        }
+    //        yield return null;
+    //    }
+    //}
 }
