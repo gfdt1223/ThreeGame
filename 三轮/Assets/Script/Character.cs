@@ -450,7 +450,7 @@ public class Character : MonoBehaviour
             case 6://分食：在能量充足时分给能量最少个体
                 StartCoroutine("Gene6");
                 break;
-            case 7://护子：幼崽遭受攻击时有概率由父母抵挡
+            case 7://护子：幼崽遭受攻击时有概率由父母抵挡（仅被捕）
                 StartCoroutine("Gene7");
                 break;
             case 8://合理分配：能量高时繁殖冷却减少，能量消耗加快；能量低时能量消耗减慢
@@ -469,6 +469,16 @@ public class Character : MonoBehaviour
             //case 10://克隆：繁殖方式变为自我复制，子代会继承全部基因和属性
             //    StartCoroutine("Gene10");
             //    break;
+            case 10://闪避：在将被吃掉时有概率躲避，并消耗大量能量(仅被捕）
+                StartCoroutine("Gene10");
+                break;
+            case 11://优胜劣汰：捕食者优先捕食年龄大的猎物(仅捕食）              
+                break;
+            case 12://精明的捕食者：优先捕食数量最多的猎物（仅捕食）
+                break;
+            case 13://藏食：在能量充足时会继续捕食储存能量，在能量不足时用于消耗(仅捕食）
+                StartCoroutine ("Gene13");
+                break;
         }
         
     }
@@ -555,4 +565,33 @@ public class Character : MonoBehaviour
     //        yield return null;
     //    }
     //}
+    IEnumerator Gene10()
+    {
+        while (true)
+        {
+            foreach (GameObject animal in DangerousAnimal)
+            {
+                if (animal.GetComponent<EatMeat>().EatTarget == this.gameObject)
+                {
+                    float random = UnityEngine.Random.Range(-1.0f, 1.0f);
+                    if (random > 0.2f)
+                    {
+                        animal.GetComponent<Character>().Stage = 3;
+                        CurrentEnergy = CurrentEnergy * 0.3f;
+                    }
+                }
+            }
+            yield return null;
+        }
+    }
+    IEnumerator Gene13()
+    {
+        while (true)
+        {
+            if(CurrentEnergy >= MaxEnergy*0.9f)
+            {
+
+            }
+        }
+    }
 }

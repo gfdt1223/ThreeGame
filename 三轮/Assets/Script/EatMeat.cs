@@ -13,6 +13,9 @@ public class EatMeat : MonoBehaviour
     public float EatCold;//获取能量冷却时间
     public float EatColdTimer;//获取能量冷却计时器
     public float mindistance;//最小距离
+    public float maxage;//最大年龄
+    public float maxnumber;//最大数量
+    public int MaxEatTag;//最大数量标签序号
     public float DefendRandom;//抵抗随机数
     public float FoodTakein;//消化速率
     public string[] EatTag;
@@ -29,15 +32,27 @@ public class EatMeat : MonoBehaviour
         {
             for (int i = 0; i < EatTag.Length; i++)
             {
-                if (i == 0)
+                if (character.Genes[12])
+                {
+                    maxnumber = 0;
+                    if (EatTag[i].Length>maxnumber)
+                    {
+                        maxnumber=EatTag[i].Length;
+                        MaxEatTag = i;
+                    }
+                }
+                else if (i == 0)
                 {
                     GameObject.FindGameObjectsWithTag(EatTag[i]).CopyTo(AnimalCanBeEat, 0);
                 }
                 else
                 {
                     GameObject.FindGameObjectsWithTag(EatTag[i]).CopyTo(AnimalCanBeEat, GameObject.FindGameObjectsWithTag(EatTag[i - 1]).Length);
-                }
-
+                }               
+            }  
+            if(character.Genes[12])
+            {
+                GameObject.FindGameObjectsWithTag(EatTag[MaxEatTag]).CopyTo(AnimalCanBeEat, 0);
             }
             EatColdTimer -= Time.deltaTime;
             if (character.Stage != 3)
@@ -48,7 +63,7 @@ public class EatMeat : MonoBehaviour
             {
                 character.Stage = 1;
             }
-            if ((character.MaxEnergy - character.CurrentEnergy < character.MultiplyCost || EatTarget == null) && character.Stage == 1)
+            if (((character.MaxEnergy - character.CurrentEnergy < character.MultiplyCost || EatTarget == null) && character.Stage == 1) && !character.Genes[13])
             {
                 character.Stage = 0;
             }
@@ -58,28 +73,46 @@ public class EatMeat : MonoBehaviour
     public void FindAnimal()//寻找猎物
     {
         mindistance = float.MaxValue;
+        maxage = float.MaxValue;       
         foreach (GameObject animal in AnimalCanBeEat)
         {
             if (animal != null)
             {
                 float distance = Vector3.Distance(transform.position, animal.transform.position);
-                if (distance < mindistance && distance <= character.LookDistance && animal.GetComponent<Character>().isCanBeEat)
+                if (!this.GetComponent<Character>().Genes[11])
                 {
-                    mindistance = distance;
-                    EatTarget = animal;
+                    if (distance < mindistance && distance <= character.LookDistance && animal.GetComponent<Character>().isCanBeEat)
+                    {
+                        mindistance = distance;
+                        EatTarget = animal;
+                    }
+                    if (character.LookDistance < mindistance)
+                    {
+                        EatTarget = null;
+                    }
                 }
-                if (character.LookDistance < mindistance)
+                else
                 {
-                    EatTarget = null;
+                    float age=animal.GetComponent<Character>().Age;
+                    if (age > maxage && distance <= character.LookDistance && animal.GetComponent<Character>().isCanBeEat)
+                    {
+                        maxage = age;
+                        EatTarget = animal;
+                    }
+                    if (character.LookDistance < mindistance)
+                    {
+                        EatTarget = null;
+                    }
                 }
                 if (distance <= 1 && character.Stage == 1)
                 {
-                    if (character.Speed < EatTarget.GetComponent<Character>().Speed)
+                    if (character.Speed < EatTarget.GetComponent<Character>().Speed)//速度判定
                     {
-                        float RandomNumber = UnityEngine.Random.Range(-1.0f, 1.0f);
-                        if (RandomNumber < 0)
+                        float RandomNumber = UnityEngine.Random.Range(0.0f, 1.0f);
+                        float DecideNumber = (EatTarget.GetComponent<Character>().Speed - character.Speed) / (EatTarget.GetComponent<Character>().Speed + character.Speed);
+                        if (RandomNumber>DecideNumber)
                         {
-                            character.CurrentEnergy += 0.5f * EatTarget.GetComponent<Character>().CurrentEnergy;
+                            character.CurrentEnergy += FoodTakein * EatTarget.GetComponent<Character>().CurrentEnergy;
                             Destroy(EatTarget);
                         }
                         else
@@ -90,7 +123,7 @@ public class EatMeat : MonoBehaviour
                     }
                     else
                     {
-                        character.CurrentEnergy += 0.5f * EatTarget.GetComponent<Character>().CurrentEnergy;
+                        character.CurrentEnergy += FoodTakein * EatTarget.GetComponent<Character>().CurrentEnergy;
                         Destroy(EatTarget);
                     }
 
