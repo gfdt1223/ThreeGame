@@ -59,15 +59,28 @@ public class EatMeat : MonoBehaviour
             {
                 FindAnimal();
             }
-            if (character.MaxEnergy - character.CurrentEnergy > character.MultiplyCost && EatTarget != null&&character.Stage!=3)
+            if (!character.Genes[13])
             {
-                character.Stage = 1;
+                if (character.MaxEnergy - character.CurrentEnergy > character.MultiplyCost && EatTarget != null && character.Stage != 3)
+                {
+                    character.Stage = 1;
+                }
+                if ((character.MaxEnergy - character.CurrentEnergy < character.MultiplyCost || EatTarget == null) && character.Stage == 1)
+                {
+                    character.Stage = 0;
+                }
             }
-            if (((character.MaxEnergy - character.CurrentEnergy < character.MultiplyCost || EatTarget == null) && character.Stage == 1) && !character.Genes[13])
+            else
             {
-                character.Stage = 0;
+                if (character.MaxEnergy > character.CurrentEnergy*1.5f  && EatTarget != null && character.Stage != 3)
+                {
+                    character.Stage = 1;
+                }
+                if ((character.MaxEnergy < character.CurrentEnergy*1.5f|| EatTarget == null) && character.Stage == 1)
+                {
+                    character.Stage = 0;
+                }
             }
-
         }
     }
     public void FindAnimal()//Ñ°ÕÒÁÔÎï

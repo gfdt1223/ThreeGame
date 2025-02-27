@@ -9,6 +9,8 @@ public class Character : MonoBehaviour
 {
     // Start is called before the first frame update
     public GameObject Self;
+    public float Value;//价值
+    public float RandomValue;//价值初始随机值
     public float prebMaxEnergy;
     public float prebSpeed;
     public float prebBirthCold;
@@ -29,6 +31,7 @@ public class Character : MonoBehaviour
     public float GenesChangeRandom;//基因突变概率
     public float MultiplyRandom;//繁殖随机数
     public GameObject[] SameAnimal;//所有同类生物
+    public float SameAnimalAmount;//附近同类数量
     public GameObject MultiplyTarget;//交配对象
     public GameObject CloestTarget;//最近同类
     public float CloestTargetDistance;//最近同类距离
@@ -53,9 +56,11 @@ public class Character : MonoBehaviour
     public Vector3 CurrentPosition;
     public Vector3 PositionAdd;
     public bool[] Genes;//基因库
-    public GameObject[] DangerousAnimal;
+    public GameObject[] DangerousAnimal;//附近捕食者
+    public float DangerousAnimalAmount;//捕食者数量
     void Start()
     {
+        RandomValue = UnityEngine.Random.Range(3.0f, 5.0f);
         Array.Resize(ref DangerousAnimal, 100);      
         BirthDuringTime = 0;
         isCanBeEat = true;
@@ -91,7 +96,7 @@ public class Character : MonoBehaviour
 
     // Update is called once per frame
     void Update()
-    {
+    {      
         BirthDuringTime-= Time.deltaTime;
         PositionAdd = transform.position-CurrentPosition;
         CurrentPosition = transform.position;
@@ -143,11 +148,8 @@ public class Character : MonoBehaviour
             else
             {
                 isCanMultiply = false;
-            }
-            if (MultiplyTarget != this.gameObject)
-            {
-                FindClosestTarget();
-            }
+            }           
+            FindClosestTarget();              
             if (isCanMultiply && MultiplyTarget != null&&MultiplyTarget!=this.gameObject)//开始繁殖
             {
                 Stage = 2;
@@ -193,6 +195,15 @@ public class Character : MonoBehaviour
             Speed = 0;
             StopAllCoroutines();
         }
+        FindDangerousAnimal();
+        if (SameAnimalAmount > 10)
+        {
+            Value = RandomValue+CurrentEnergy*0.01f+(20-SameAnimalAmount)/(DangerousAnimalAmount+1)*2.0f-(Age-(MultiplyAge+OldAge))*(Age-(MultiplyAge+OldAge))/4*0.5f;
+        }
+        else
+        {
+            Value = RandomValue+CurrentEnergy*0.01f+(SameAnimalAmount)/(DangerousAnimalAmount+1)*2.0f-(Age-(MultiplyAge+OldAge))*(Age-(MultiplyAge+OldAge))/4*0.5f;
+        }
     }
     public void Multiply()//繁殖
     {
@@ -226,9 +237,14 @@ public class Character : MonoBehaviour
         }
         CloestTarget = null;
         CloestTargetDistance = float.MaxValue;
+        SameAnimalAmount = 0;
         foreach (GameObject target in SameAnimal)
         {
             float distance=Vector3.Distance(transform.position,target.transform.position);
+            if(target!=this.gameObject&&target!=null)
+            {
+                SameAnimalAmount++;
+            }
             if (distance < TargetDistance&&(target.GetComponent<Character>().isCanMultiply||Stage==2)&&target!=this.gameObject)//寻找最近可繁殖同类
             {
                 TargetDistance=distance;
@@ -407,6 +423,17 @@ public class Character : MonoBehaviour
                     Genes[i]= true;
                 }
             }
+        }   
+    }
+    public void FindDangerousAnimal()//遍历捕食者数量
+    {
+        DangerousAnimalAmount = 0;
+        foreach(GameObject animal in DangerousAnimal)
+        {
+            if(animal != null)
+            {
+                DangerousAnimalAmount++;
+            }
         }
     }
     public void WorkGenes(int i)//执行基因
@@ -451,7 +478,14 @@ public class Character : MonoBehaviour
                 StartCoroutine("Gene6");
                 break;
             case 7://护子：幼崽遭受攻击时有概率由父母抵挡（仅被捕）
-                StartCoroutine("Gene7");
+                if (isCanBeEat)
+                {
+                    StartCoroutine("Gene7");
+                }
+                else
+                {
+                    Genes[7]=false;
+                }
                 break;
             case 8://合理分配：能量高时繁殖冷却减少，能量消耗加快；能量低时能量消耗减慢
                 StartCoroutine("Gene8");
@@ -470,14 +504,38 @@ public class Character : MonoBehaviour
             //    StartCoroutine("Gene10");
             //    break;
             case 10://闪避：在将被吃掉时有概率躲避，并消耗大量能量(仅被捕）
-                StartCoroutine("Gene10");
+                if (isCanBeEat)
+                {
+                    StartCoroutine("Gene10");
+                }
+                else
+                {
+                    Genes[10]=false;
+                }
                 break;
-            case 11://优胜劣汰：捕食者优先捕食年龄大的猎物(仅捕食）              
+            case 11://优胜劣汰：捕食者优先捕食年龄大的猎物(仅捕食）
+                if(isCanBeEat)
+                {
+                    Genes[11]=false;
+                }
                 break;
             case 12://精明的捕食者：优先捕食数量最多的猎物（仅捕食）
+                if (isCanBeEat)
+                {
+                    Genes[12] = false;
+                }
                 break;
             case 13://藏食：在能量充足时会继续捕食储存能量，在能量不足时用于消耗(仅捕食）
-                StartCoroutine ("Gene13");
+                if (isCanBeEat)
+                {
+                    Genes[13] = false;
+                }
+                break;
+            case 14://合理节食：当食物匮乏时停止进食，并进行休眠，能量消耗减少,速度减少(仅被捕)
+                if (!isCanBeEat)
+                {
+                    Genes[14] = false;
+                }
                 break;
         }
         
@@ -582,16 +640,6 @@ public class Character : MonoBehaviour
                 }
             }
             yield return null;
-        }
-    }
-    IEnumerator Gene13()
-    {
-        while (true)
-        {
-            if(CurrentEnergy >= MaxEnergy*0.9f)
-            {
-
-            }
         }
     }
 }

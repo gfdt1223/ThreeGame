@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.VisualScripting;
+using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 
@@ -18,9 +19,13 @@ public class EatPlant : MonoBehaviour
     public float EatColdTimer;//获取能量冷却计时器
     public float mindistance;//最小距离
     public string[] EatTag;
+    public float speed;//存储速度
+    public bool isGetSpeed;//是否获取速度
     void Start()
     {
         Array.Resize(ref Plant, 600);
+        isGetSpeed=false;
+        speed=character.Speed;
     }
 
     // Update is called once per frame
@@ -43,8 +48,29 @@ public class EatPlant : MonoBehaviour
             FindPlant();
             if (character.MaxEnergy - character.CurrentEnergy > EatAmount && EatTarget != null&&character.Stage!=2)
             {
-                character.Stage = 1;
-                Eat();
+                if (!character.Genes[14])
+                {
+                    character.Speed = speed;
+                    character.Stage = 1;
+                    Eat();
+                }
+                else if(Plant.Length >30)
+                {
+                    character.Speed=speed;
+                    character.Stage = 1;
+                    Eat();
+                }
+                else
+                {
+                    character.Stage = 0;
+                    character.CurrentEnergy += 0.2f;
+                    if (!isGetSpeed)
+                    {
+                        speed = character.Speed;
+                        isGetSpeed = true;
+                    }
+                    character.Speed = 0.2f*speed;
+                }
             }
             else if (character.MaxEnergy - character.CurrentEnergy < EatAmount&&character.Stage!=2)
             {

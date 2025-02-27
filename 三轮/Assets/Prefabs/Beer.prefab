@@ -102,6 +102,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Self: {fileID: 2944276036050776152}
+  Value: 0
+  RandomValue: 0
   prebMaxEnergy: 300
   prebSpeed: 0.8
   prebBirthCold: 120
@@ -113,6 +115,7 @@ MonoBehaviour:
   MultiplyAge: 1
   Speed: 0.8
   isCanMultiply: 0
+  RestTime: 10
   BirthAmount: 1
   BirthCold: 120
   BirthDuringTime: 0
@@ -121,6 +124,7 @@ MonoBehaviour:
   GenesChangeRandom: 0.05
   MultiplyRandom: 0
   SameAnimal: []
+  SameAnimalAmount: 0
   MultiplyTarget: {fileID: 0}
   CloestTarget: {fileID: 0}
   CloestTargetDistance: 0
@@ -139,8 +143,9 @@ MonoBehaviour:
   isCanBeEat: 0
   CurrentPosition: {x: 0, y: 0, z: 0}
   PositionAdd: {x: 0, y: 0, z: 0}
-  Genes: 0000000000000000000000
+  Genes: 000000000000000000000000000000
   DangerousAnimal: []
+  DangerousAnimalAmount: 0
 --- !u!114 &5806003914673277902
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -159,6 +164,9 @@ MonoBehaviour:
   EatCold: 1
   EatColdTimer: 0
   mindistance: 0
+  maxage: 0
+  maxnumber: 0
+  MaxEatTag: 0
   DefendRandom: 0
   FoodTakein: 0.5
   EatTag:
