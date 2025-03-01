@@ -99,7 +99,31 @@ MonoBehaviour:
   m_GameObject: {fileID: 4386976644211860510}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4b9ad24093711634d86e7d97b4f0236c, type: 3}
+  m_Script: {fileID: 11500000, guid: 37ddafe4e76b5a3478839403f094e367, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  character: {fileID: 593817713105077518}
+  Plant: []
+  EatDistance: 0.5
+  EatTarget: {fileID: 0}
+  EatAmount: 10
+  EatCold: 1
+  EatColdTimer: 0
+  mindistance: 0
+  EatTag:
+  - grass
+  speed: 0
+  isGetSpeed: 0
+--- !u!114 &593817713105077518
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4386976644211860510}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0dcbd60b5a5058c438347872e9b7fef2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   Self: {fileID: 4386976644211860510}
@@ -147,31 +171,6 @@ MonoBehaviour:
   Genes: 000000000000000000000000000000
   DangerousAnimal: []
   DangerousAnimalAmount: 0
---- !u!114 &593817713105077518
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4386976644211860510}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6678c56b21a95564483190ebde60a58c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  character: {fileID: 4100226147307447434}
-  Plant: []
-  EatDistance: 0.5
-  EatTarget: {fileID: 0}
-  EatAmount: 10
-  EatCold: 1
-  EatColdTimer: 0
-  mindistance: 0
-  EatTag:
-  - grass
-  - tall grass
-  speed: 0
-  isGetSpeed: 0
 --- !u!95 &7090644247102934970
 Animator:
   serializedVersion: 5
@@ -267,7 +266,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 971a829455e2d84458a1620e441a2441, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  character: {fileID: 4100226147307447434}
+  character: {fileID: 0}
   Center: {x: 0, y: 0, z: 0}
   Sum: {x: 0, y: 0, z: 0}
   Amount: 0
