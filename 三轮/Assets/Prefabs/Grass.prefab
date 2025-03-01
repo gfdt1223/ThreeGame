@@ -74,7 +74,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 1
-  m_Sprite: {fileID: -207985689, guid: 79bcb735fccd0794fa134bed7a13f7cb, type: 3}
+  m_Sprite: {fileID: -244576890, guid: 4c5c4106b466a2144ae5b7f21570b5e2, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -106,3 +106,4 @@ MonoBehaviour:
   AllPlantAmount: 0
   MaxEnergy: 9
   CurrentEnergy: 0
+  grassTile: {fileID: 11400000, guid: 640b15b2c178e09498bef15a77a99220, type: 2}
